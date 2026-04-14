@@ -1,0 +1,56 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Livraria — {{ livraria.nome ?? 'Bookstore' }}{% endblock %}
+
+{% block content %}
+<h2 class="mb-4"><i class="bi bi-shop"></i> Dados da Livraria</h2>
+
+{{ form_start(form) }}
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-header bg-dark text-white">Informações Gerais</div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6 mb-3">{{ form_row(form.nome) }}</div>
+            <div class="col-md-3 mb-3">{{ form_row(form.telefone) }}</div>
+            <div class="col-md-3 mb-3">{{ form_row(form.email) }}</div>
+        </div>
+        <div class="mb-3">{{ form_row(form.descricao) }}</div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-header bg-dark text-white">Endereço</div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-2 mb-3">
+                {{ form_label(form.cep) }}
+                <div class="input-group">
+                    {{ form_widget(form.cep) }}
+                    <button type="button" class="btn btn-outline-secondary" id="btn-buscar-cep" title="Buscar CEP">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+                {{ form_errors(form.cep) }}
+                <div id="cep-feedback" class="invalid-feedback"></div>
+            </div>
+            <div class="col-md-5 mb-3">{{ form_row(form.logradouro) }}</div>
+            <div class="col-md-2 mb-3">{{ form_row(form.numero) }}</div>
+            <div class="col-md-3 mb-3">{{ form_row(form.complemento) }}</div>
+        </div>
+        <div class="row">
+            <div class="col-md-4 mb-3">{{ form_row(form.bairro) }}</div>
+            <div class="col-md-4 mb-3">{{ form_row(form.cidade) }}</div>
+            <div class="col-md-2 mb-3">{{ form_row(form.uf) }}</div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-end">
+    <button type="submit" class="btn btn-success"><i class="bi bi-check-lg"></i> Salvar</button>
+</div>
+{{ form_end(form) }}
+{% endblock %}
+
+{% block javascripts %}
+<script src="/js/viacep.js"></script>
+{% endblock %}
