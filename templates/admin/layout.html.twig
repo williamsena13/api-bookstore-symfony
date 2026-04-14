@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="d-flex">
+    <div class="sidebar d-flex flex-column" style="width: 250px;">
+        <div class="p-3 text-white fw-bold fs-5 border-bottom border-secondary">
+            <i class="bi bi-book"></i> Bookstore
+        </div>
+        <a href="{{ path('app_admin_dashboard') }}" class="{{ app.request.get('_route') == 'app_admin_dashboard' ? 'active' : '' }}">
+            <i class="bi bi-speedometer2"></i> Dashboard
+        </a>
+        <a href="{{ path('app_assunto_index') }}" class="{{ app.request.get('_route') starts with 'app_assunto' ? 'active' : '' }}">
+            <i class="bi bi-tags"></i> Assuntos
+        </a>
+        <a href="{{ path('app_editora_index') }}" class="{{ app.request.get('_route') starts with 'app_editora' ? 'active' : '' }}">
+            <i class="bi bi-building"></i> Editoras
+        </a>
+        <div class="mt-auto border-top border-secondary p-3">
+            <small class="text-secondary">{{ app.user.email }}</small>
+            <a href="{{ path('app_logout') }}" class="text-danger mt-1"><i class="bi bi-box-arrow-left"></i> Sair</a>
+        </div>
+    </div>
+    <div class="content flex-grow-1">
+        {% for type in ['success', 'warning', 'danger'] %}
+            {% for message in app.flashes(type) %}
+                <div class="alert alert-{{ type }} alert-dismissible fade show">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endfor %}
+        {% block content %}{% endblock %}
+    </div>
+</div>
+{% endblock %}
