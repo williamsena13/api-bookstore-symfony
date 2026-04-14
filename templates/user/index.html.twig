@@ -1,0 +1,75 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Usuários — {{ livraria.nome ?? 'Bookstore' }}{% endblock %}
+
+{% block content %}
+<div id="alert-container"></div>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Usuários</h2>
+    <button class="btn btn-success btn-modal" data-url="{{ path('app_user_new') }}" data-title="Novo Usuário">
+        <i class="bi bi-plus-lg"></i> Novo Usuário
+    </button>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Nome</th>
+                    <th>E-mail</th>
+                    <th>Perfil</th>
+                    <th class="text-end">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.nome ?? '—' }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>
+                        {% for role in user.roles %}
+                            <span class="badge {{ role == 'ROLE_ADMIN' ? 'bg-primary' : 'bg-secondary' }}">
+                                {{ role == 'ROLE_ADMIN' ? 'Admin' : 'Usuário' }}
+                            </span>
+                        {% endfor %}
+                    </td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-warning btn-modal" data-url="{{ path('app_user_edit', {id: user.id}) }}" data-title="Editar Usuário">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        {% if user != app.user %}
+                        <form method="post" action="{{ path('app_user_delete', {id: user.id}) }}" class="d-inline" onsubmit="return confirm('Tem certeza que deseja excluir este usuário?')">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+                            <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="5" class="text-center text-muted py-4">Nenhum usuário cadastrado.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="crudModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+{% include 'admin/_modal_js.html.twig' %}
+{% endblock %}
