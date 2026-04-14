@@ -18,6 +18,17 @@
 <body>
 {% block body %}{% endblock %}
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('input[data-mask="money"]').forEach(function(el) {
+        el.addEventListener('input', function() {
+            let v = this.value.replace(/\D/g, '');
+            v = (parseInt(v) / 100).toFixed(2);
+            this.value = v.replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        });
+    });
+});
+</script>
 {% block javascripts %}{% endblock %}
 </body>
 </html>

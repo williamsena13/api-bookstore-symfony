@@ -61,58 +61,5 @@
 {% endblock %}
 
 {% block javascripts %}
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const modalEl = document.getElementById('crudModal');
-    const modal = new bootstrap.Modal(modalEl);
-    const modalTitle = modalEl.querySelector('.modal-title');
-    const modalBody = modalEl.querySelector('.modal-body');
-    const alertContainer = document.getElementById('alert-container');
-
-    function showAlert(message, type = 'success') {
-        alertContainer.innerHTML = `
-            <div class="alert alert-${type} alert-dismissible fade show">
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>`;
-    }
-
-    const flashMessage = sessionStorage.getItem('flashMessage');
-    if (flashMessage) {
-        showAlert(flashMessage);
-        sessionStorage.removeItem('flashMessage');
-    }
-
-    function bindForm(url) {
-        modalBody.querySelector('#modal-form').addEventListener('submit', async function (e) {
-            e.preventDefault();
-            const res = await fetch(url, { method: 'POST', body: new FormData(this) });
-            const contentType = res.headers.get('content-type') || '';
-
-            if (contentType.includes('application/json')) {
-                const data = await res.json();
-                modal.hide();
-                sessionStorage.setItem('flashMessage', data.message);
-                location.reload();
-            } else {
-                modalBody.innerHTML = await res.text();
-                bindForm(url);
-            }
-        });
-    }
-
-    document.querySelectorAll('.btn-modal').forEach(btn => {
-        btn.addEventListener('click', async function () {
-            const url = this.dataset.url;
-            modalTitle.textContent = this.dataset.title;
-            modalBody.innerHTML = '<div class="text-center py-4"><div class="spinner-border"></div></div>';
-            modal.show();
-
-            const html = await (await fetch(url)).text();
-            modalBody.innerHTML = html;
-            bindForm(url);
-        });
-    });
-});
-</script>
+{% include 'admin/_modal_js.html.twig' %}
 {% endblock %}

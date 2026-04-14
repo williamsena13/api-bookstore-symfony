@@ -1,0 +1,102 @@
+{% extends 'admin/layout.html.twig' %}
+{% block title %}Rankings — Bookstore{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Rankings e Estatísticas</h2>
+    <div class="d-flex gap-2">
+        <a href="{{ path('app_relatorio_index') }}" class="btn btn-outline-primary btn-sm"><i class="bi bi-arrow-left"></i> Voltar</a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-primary text-white"><i class="bi bi-person"></i> Top Autores (mais livros)</div>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light"><tr><th>#</th><th>Autor</th><th>Livros</th></tr></thead>
+                    <tbody>
+                        {% for i, r in autorMaisLivros %}
+                        <tr>
+                            <td><span class="badge {{ i < 3 ? 'bg-warning text-dark' : 'bg-secondary' }}">{{ i + 1 }}º</span></td>
+                            <td><strong>{{ r.nome }}</strong></td>
+                            <td>{{ r.total }}</td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="3" class="text-center text-muted">Nenhum dado.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-success text-white"><i class="bi bi-building"></i> Top Editoras (mais livros)</div>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light"><tr><th>#</th><th>Editora</th><th>Livros</th></tr></thead>
+                    <tbody>
+                        {% for i, r in editoraMaisLivros %}
+                        <tr>
+                            <td><span class="badge {{ i < 3 ? 'bg-warning text-dark' : 'bg-secondary' }}">{{ i + 1 }}º</span></td>
+                            <td><strong>{{ r.nome }}</strong></td>
+                            <td>{{ r.total }}</td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="3" class="text-center text-muted">Nenhum dado.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header text-white" style="background:#E65100;"><i class="bi bi-currency-dollar"></i> Livros mais caros</div>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light"><tr><th>#</th><th>Título</th><th>Editora</th><th>Preço</th></tr></thead>
+                    <tbody>
+                        {% for i, r in livroMaisCaro %}
+                        <tr>
+                            <td><span class="badge {{ i < 3 ? 'bg-warning text-dark' : 'bg-secondary' }}">{{ i + 1 }}º</span></td>
+                            <td><strong>{{ r.titulo }}</strong></td>
+                            <td>{{ r.editora ?? '—' }}</td>
+                            <td class="text-success fw-bold">R$ {{ r.preco|number_format(2, ',', '.') }}</td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="4" class="text-center text-muted">Nenhum dado.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-info text-white"><i class="bi bi-tags"></i> Top Assuntos</div>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light"><tr><th>#</th><th>Assunto</th><th>Livros</th></tr></thead>
+                    <tbody>
+                        {% for i, r in assuntoMaisLivros %}
+                        <tr>
+                            <td><span class="badge {{ i < 3 ? 'bg-warning text-dark' : 'bg-secondary' }}">{{ i + 1 }}º</span></td>
+                            <td><strong>{{ r.descricao }}</strong></td>
+                            <td>{{ r.total }}</td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="3" class="text-center text-muted">Nenhum dado.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

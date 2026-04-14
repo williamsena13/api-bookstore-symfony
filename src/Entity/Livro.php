@@ -28,6 +28,10 @@ class Livro
     #[Assert\Positive(message: 'O ano deve ser um número positivo.')]
     private ?int $anoPublicacao = null;
 
+    #[ORM\Column(type: 'integer', nullable: true)]
+    #[Assert\Positive(message: 'A edição deve ser um número positivo.')]
+    private ?int $edicao = null;
+
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2, nullable: true)]
     #[Assert\PositiveOrZero(message: 'O preço deve ser zero ou positivo.')]
     private ?string $preco = null;
@@ -69,6 +73,9 @@ class Livro
 
     public function getAnoPublicacao(): ?int { return $this->anoPublicacao; }
     public function setAnoPublicacao(?int $anoPublicacao): static { $this->anoPublicacao = $anoPublicacao; return $this; }
+
+    public function getEdicao(): ?int { return $this->edicao; }
+    public function setEdicao(?int $edicao): static { $this->edicao = $edicao; return $this; }
 
     public function getPreco(): ?string { return $this->preco; }
     public function setPreco(?string $preco): static { $this->preco = $preco; return $this; }

@@ -21,6 +21,7 @@
                     <th>Autores</th>
                     <th>Editora</th>
                     <th>Ano</th>
+                    <th>Ed.</th>
                     <th>Preço</th>
                     <th class="text-end">Ações</th>
                 </tr>
@@ -33,6 +34,7 @@
                     <td>{{ livro.autores|map(a => a.nome)|join(', ') }}</td>
                     <td>{{ livro.editora ?? '—' }}</td>
                     <td>{{ livro.anoPublicacao ?? '—' }}</td>
+                    <td>{{ livro.edicao ? livro.edicao ~ 'ª' : '—' }}</td>
                     <td>{{ livro.preco ? ('R$ ' ~ livro.preco|number_format(2, ',', '.')) : '—' }}</td>
                     <td class="text-end">
                         <button class="btn btn-sm btn-outline-warning btn-modal" data-url="{{ path('app_livro_edit', {id: livro.id}) }}" data-title="Editar Livro">
@@ -45,7 +47,7 @@
                     </td>
                 </tr>
                 {% else %}
-                <tr><td colspan="7" class="text-center text-muted py-4">Nenhum livro cadastrado.</td></tr>
+                <tr><td colspan="8" class="text-center text-muted py-4">Nenhum livro cadastrado.</td></tr>
                 {% endfor %}
             </tbody>
         </table>
@@ -67,58 +69,5 @@
 {% endblock %}
 
 {% block javascripts %}
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const modalEl = document.getElementById('crudModal');
-    const modal = new bootstrap.Modal(modalEl);
-    const modalTitle = modalEl.querySelector('.modal-title');
-    const modalBody = modalEl.querySelector('.modal-body');
-    const alertContainer = document.getElementById('alert-container');
-
-    function showAlert(message, type = 'success') {
-        alertContainer.innerHTML = `
-            <div class="alert alert-${type} alert-dismissible fade show">
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>`;
-    }
-
-    const flashMessage = sessionStorage.getItem('flashMessage');
-    if (flashMessage) {
-        showAlert(flashMessage);
-        sessionStorage.removeItem('flashMessage');
-    }
-
-    function bindForm(url) {
-        modalBody.querySelector('#modal-form').addEventListener('submit', async function (e) {
-            e.preventDefault();
-            const res = await fetch(url, { method: 'POST', body: new FormData(this) });
-            const contentType = res.headers.get('content-type') || '';
-
-            if (contentType.includes('application/json')) {
-                const data = await res.json();
-                modal.hide();
-                sessionStorage.setItem('flashMessage', data.message);
-                location.reload();
-            } else {
-                modalBody.innerHTML = await res.text();
-                bindForm(url);
-            }
-        });
-    }
-
-    document.querySelectorAll('.btn-modal').forEach(btn => {
-        btn.addEventListener('click', async function () {
-            const url = this.dataset.url;
-            modalTitle.textContent = this.dataset.title;
-            modalBody.innerHTML = '<div class="text-center py-4"><div class="spinner-border"></div></div>';
-            modal.show();
-
-            const html = await (await fetch(url)).text();
-            modalBody.innerHTML = html;
-            bindForm(url);
-        });
-    });
-});
-</script>
+{% include 'admin/_modal_js.html.twig' %}
 {% endblock %}

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: DejaVu Sans, sans-serif; font-size: 11px; color: #212121; margin: 20px; }
+        h1 { font-size: 18px; color: #1565C0; margin-bottom: 5px; }
+        .subtitle { font-size: 11px; color: #757575; margin-bottom: 20px; }
+        .group-header { background: #1565C0; color: #fff; padding: 8px 12px; font-size: 13px; margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+        th { background: #ECEFF1; color: #546E7A; font-size: 10px; text-transform: uppercase; text-align: left; padding: 6px 8px; border-bottom: 2px solid #CFD8DC; }
+        td { padding: 6px 8px; border-bottom: 1px solid #E0E0E0; font-size: 11px; }
+        tr:nth-child(even) td { background: #FAFAFA; }
+        .text-success { color: #2E7D32; font-weight: bold; }
+        .stats { background: #E3F2FD; padding: 10px 15px; margin-bottom: 20px; font-size: 12px; }
+        .stats span { margin-right: 30px; }
+        .footer { margin-top: 30px; border-top: 1px solid #E0E0E0; padding-top: 8px; font-size: 9px; color: #9E9E9E; text-align: center; }
+    </style>
+</head>
+<body>
+    <h1>Relatório — Livros por Editora</h1>
+    <div class="subtitle">Gerado em {{ "now"|date("d/m/Y H:i") }}</div>
+
+    {% set totalEditoras = agrupado|length %}
+    {% set totalLivros = 0 %}
+    {% set totalValor = 0 %}
+    {% for e, livros in agrupado %}
+        {% set totalLivros = totalLivros + livros|length %}
+        {% for l in livros %}{% set totalValor = totalValor + l.preco %}{% endfor %}
+    {% endfor %}
+
+    <div class="stats">
+        <span><strong>{{ totalEditoras }}</strong> editoras</span>
+        <span><strong>{{ totalLivros }}</strong> livros</span>
+        <span><strong>R$ {{ totalValor|number_format(2, ',', '.') }}</strong> valor total</span>
+    </div>
+
+    {% for editoraNome, livros in agrupado %}
+    <div class="group-header">{{ editoraNome }} ({{ livros|length }} livro{{ livros|length > 1 ? 's' : '' }})</div>
+    <table>
+        <thead><tr><th>Título</th><th>Ed.</th><th>Ano</th><th>Preço</th><th>Autores</th><th>Assuntos</th></tr></thead>
+        <tbody>
+            {% for l in livros %}
+            <tr>
+                <td><strong>{{ l.livro_titulo }}</strong></td>
+                <td>{{ l.edicao ? l.edicao ~ 'ª' : '—' }}</td>
+                <td>{{ l.ano_publicacao ?? '—' }}</td>
+                <td class="text-success">{{ l.preco ? ('R$ ' ~ l.preco|number_format(2, ',', '.')) : '—' }}</td>
+                <td>{{ l.autores|default('—') }}</td>
+                <td>{{ l.assuntos|default('—') }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>Nenhum dado para exibir.</p>
+    {% endfor %}
+
+    <div class="footer">Bookstore — Relatório gerado via DomPDF</div>
+</body>
+</html>

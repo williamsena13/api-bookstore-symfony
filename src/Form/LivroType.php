@@ -33,11 +33,16 @@ class LivroType extends AbstractType
                 'required' => false,
                 'attr' => ['class' => 'form-control', 'placeholder' => 'Ex: 2024'],
             ])
+            ->add('edicao', IntegerType::class, [
+                'label' => 'Edição',
+                'required' => false,
+                'attr' => ['class' => 'form-control', 'placeholder' => 'Ex: 1'],
+            ])
             ->add('preco', MoneyType::class, [
                 'label' => 'Preço',
                 'currency' => 'BRL',
                 'required' => false,
-                'attr' => ['class' => 'form-control'],
+                'attr' => ['class' => 'form-control', 'data-mask' => 'money'],
             ])
             ->add('editora', EntityType::class, [
                 'class' => Editora::class,
