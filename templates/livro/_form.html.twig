@@ -1,0 +1,39 @@
+{{ form_start(form, {attr: {id: 'modal-form'}}) }}
+    <div class="row">
+        <div class="col-md-8 mb-3">
+            {{ form_row(form.titulo) }}
+        </div>
+        <div class="col-md-4 mb-3">
+            {{ form_row(form.isbn) }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            {{ form_row(form.editora) }}
+        </div>
+        <div class="col-md-4 mb-3">
+            {{ form_row(form.anoPublicacao) }}
+        </div>
+        <div class="col-md-4 mb-3">
+            {{ form_row(form.preco) }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            {{ form_label(form.autores) }}
+            <small class="text-muted d-block mb-1">Segure Ctrl para selecionar vários</small>
+            {{ form_widget(form.autores) }}
+            {{ form_errors(form.autores) }}
+        </div>
+        <div class="col-md-6 mb-3">
+            {{ form_label(form.assuntos) }}
+            <small class="text-muted d-block mb-1">Segure Ctrl para selecionar vários</small>
+            {{ form_widget(form.assuntos) }}
+            {{ form_errors(form.assuntos) }}
+        </div>
+    </div>
+    <div class="d-flex justify-content-end gap-2">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="submit" class="btn btn-success"><i class="bi bi-check-lg"></i> Salvar</button>
+    </div>
+{{ form_end(form) }}

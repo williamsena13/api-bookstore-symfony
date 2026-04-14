@@ -1,0 +1,124 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Livros — Bookstore{% endblock %}
+
+{% block content %}
+<div id="alert-container"></div>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Livros</h2>
+    <button class="btn btn-success btn-modal" data-url="{{ path('app_livro_new') }}" data-title="Novo Livro">
+        <i class="bi bi-plus-lg"></i> Novo Livro
+    </button>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Título</th>
+                    <th>Autores</th>
+                    <th>Editora</th>
+                    <th>Ano</th>
+                    <th>Preço</th>
+                    <th class="text-end">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for livro in livros %}
+                <tr>
+                    <td>{{ livro.id }}</td>
+                    <td>{{ livro.titulo }}</td>
+                    <td>{{ livro.autores|map(a => a.nome)|join(', ') }}</td>
+                    <td>{{ livro.editora ?? '—' }}</td>
+                    <td>{{ livro.anoPublicacao ?? '—' }}</td>
+                    <td>{{ livro.preco ? ('R$ ' ~ livro.preco|number_format(2, ',', '.')) : '—' }}</td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-warning btn-modal" data-url="{{ path('app_livro_edit', {id: livro.id}) }}" data-title="Editar Livro">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <form method="post" action="{{ path('app_livro_delete', {id: livro.id}) }}" class="d-inline" onsubmit="return confirm('Tem certeza que deseja excluir?')">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ livro.id) }}">
+                            <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="7" class="text-center text-muted py-4">Nenhum livro cadastrado.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="crudModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const modalEl = document.getElementById('crudModal');
+    const modal = new bootstrap.Modal(modalEl);
+    const modalTitle = modalEl.querySelector('.modal-title');
+    const modalBody = modalEl.querySelector('.modal-body');
+    const alertContainer = document.getElementById('alert-container');
+
+    function showAlert(message, type = 'success') {
+        alertContainer.innerHTML = `
+            <div class="alert alert-${type} alert-dismissible fade show">
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>`;
+    }
+
+    const flashMessage = sessionStorage.getItem('flashMessage');
+    if (flashMessage) {
+        showAlert(flashMessage);
+        sessionStorage.removeItem('flashMessage');
+    }
+
+    function bindForm(url) {
+        modalBody.querySelector('#modal-form').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const res = await fetch(url, { method: 'POST', body: new FormData(this) });
+            const contentType = res.headers.get('content-type') || '';
+
+            if (contentType.includes('application/json')) {
+                const data = await res.json();
+                modal.hide();
+                sessionStorage.setItem('flashMessage', data.message);
+                location.reload();
+            } else {
+                modalBody.innerHTML = await res.text();
+                bindForm(url);
+            }
+        });
+    }
+
+    document.querySelectorAll('.btn-modal').forEach(btn => {
+        btn.addEventListener('click', async function () {
+            const url = this.dataset.url;
+            modalTitle.textContent = this.dataset.title;
+            modalBody.innerHTML = '<div class="text-center py-4"><div class="spinner-border"></div></div>';
+            modal.show();
+
+            const html = await (await fetch(url)).text();
+            modalBody.innerHTML = html;
+            bindForm(url);
+        });
+    });
+});
+</script>
+{% endblock %}
