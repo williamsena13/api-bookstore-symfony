@@ -1,0 +1,21 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}{{ title }} — Bookstore{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>{{ title }}</h2>
+    <a href="{{ path('app_autor_index') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Voltar</a>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        {{ form_start(form) }}
+            <div class="mb-3">
+                {{ form_row(form.nome) }}
+            </div>
+            <button type="submit" class="btn btn-success"><i class="bi bi-check-lg"></i> Salvar</button>
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}
