@@ -1,12 +1,13 @@
 {% extends 'admin/layout.html.twig' %}
-{% block title %}Relatório por Autor — Bookstore{% endblock %}
+{% block title %}Relatório por Autor — {{ livraria.nome ?? 'Bookstore' }}{% endblock %}
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2>Livros por Autor</h2>
     <div class="d-flex gap-2">
-        <a href="{{ path('app_relatorio_por_autor_pdf') }}" target="_blank" class="btn btn-danger btn-sm"><i class="bi bi-file-pdf"></i> Exportar PDF</a>
-        <a href="{{ path('app_relatorio_index') }}" class="btn btn-outline-primary btn-sm"><i class="bi bi-arrow-left"></i> Voltar</a>
+        <a href="{{ path('app_relatorio_por_autor_pdf') }}" target="_blank" class="btn btn-danger btn-sm no-print"><i class="bi bi-file-pdf"></i> Exportar PDF</a>
+        <button onclick="window.print()" class="btn btn-outline-secondary btn-sm no-print"><i class="bi bi-printer"></i> Imprimir</button>
+        <a href="{{ path('app_relatorio_index') }}" class="btn btn-outline-primary btn-sm no-print"><i class="bi bi-arrow-left"></i> Voltar</a>
     </div>
 </div>
 

@@ -1,12 +1,12 @@
 {% extends 'admin/layout.html.twig' %}
 
-{% block title %}Assuntos — Bookstore{% endblock %}
+{% block title %}Assuntos — {{ livraria.nome ?? 'Bookstore' }}{% endblock %}
 
 {% block content %}
 <div id="alert-container"></div>
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2>Assuntos</h2>
-    <button class="btn btn-primary btn-modal" data-url="{{ path('app_assunto_new') }}" data-title="Novo Assunto">
+    <button class="btn btn-success btn-modal" data-url="{{ path('app_assunto_new') }}" data-title="Novo Assunto">
         <i class="bi bi-plus-lg"></i> Novo Assunto
     </button>
 </div>

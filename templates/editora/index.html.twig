@@ -1,6 +1,6 @@
 {% extends 'admin/layout.html.twig' %}
 
-{% block title %}Editoras — Bookstore{% endblock %}
+{% block title %}Editoras — {{ livraria.nome ?? 'Bookstore' }}{% endblock %}
 
 {% block content %}
 <div id="alert-container"></div>
