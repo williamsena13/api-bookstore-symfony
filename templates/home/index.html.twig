@@ -1,0 +1,240 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ livraria.nome ?? 'Bookstore' }} — Sistema de Gerenciamento de Livros{% endblock %}
+
+{% block stylesheets %}
+<link href="/css/landing.css" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+
+{# NAVBAR #}
+<nav class="landing-nav" id="landing-nav">
+    <div class="container d-flex justify-content-between align-items-center">
+        <a href="{{ path('app_home') }}" class="text-white text-decoration-none fw-bold fs-5">
+            <i class="bi bi-book-half text-indigo"></i> {{ livraria.nome ?? 'Bookstore' }}
+        </a>
+        <div class="d-flex align-items-center gap-3">
+            <a href="{{ path('app_home_tech') }}" class="btn-landing-outline py-2 px-3" style="font-size:.85rem;">
+                <i class="bi bi-cpu"></i> Tecnologias
+            </a>
+            <a href="{{ path('app_login') }}" class="btn-landing-primary py-2 px-3" style="font-size:.85rem;">
+                <i class="bi bi-box-arrow-in-right"></i> Acessar
+            </a>
+        </div>
+    </div>
+</nav>
+
+{# HERO #}
+<section class="hero">
+    <div class="container" style="position:relative;z-index:1;">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <div class="hero-badge"><i class="bi bi-stars me-1"></i> Sistema MVP — Symfony 6.4</div>
+                <h1 class="hero-title">
+                    Gerencie seu acervo de <span>livros</span> com eficiência
+                </h1>
+                <p class="hero-subtitle">
+                    Plataforma completa para cadastro e controle de livros, autores, editoras e assuntos.
+                    Com relatórios em PDF, painel administrativo e autenticação segura.
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="{{ path('app_login') }}" class="btn-landing-primary">
+                        <i class="bi bi-box-arrow-in-right"></i> Acessar o sistema
+                    </a>
+                    <a href="{{ path('app_home_tech') }}" class="btn-landing-outline">
+                        <i class="bi bi-cpu"></i> Ver tecnologias
+                    </a>
+                </div>
+                <div class="hero-stats">
+                    <div>
+                        <div class="hero-stat-number">{{ totalLivros }}</div>
+                        <div class="hero-stat-label">Livros</div>
+                    </div>
+                    <div>
+                        <div class="hero-stat-number">{{ totalAutores }}</div>
+                        <div class="hero-stat-label">Autores</div>
+                    </div>
+                    <div>
+                        <div class="hero-stat-number">{{ totalEditoras }}</div>
+                        <div class="hero-stat-label">Editoras</div>
+                    </div>
+                    <div>
+                        <div class="hero-stat-number">{{ totalAssuntos }}</div>
+                        <div class="hero-stat-label">Assuntos</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="row g-3">
+                    <div class="col-6">
+                        <div class="hero-card">
+                            <div class="hero-card-icon" style="background:rgba(99,102,241,0.15);">
+                                <i class="bi bi-journal-text" style="color:#6366f1;"></i>
+                            </div>
+                            <div class="text-white fw-semibold mb-1">CRUD Completo</div>
+                            <div style="color:#64748b;font-size:.85rem;">Livros, Autores, Editoras e Assuntos</div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="hero-card mt-4">
+                            <div class="hero-card-icon" style="background:rgba(16,185,129,0.15);">
+                                <i class="bi bi-file-earmark-pdf" style="color:#10b981;"></i>
+                            </div>
+                            <div class="text-white fw-semibold mb-1">Relatórios PDF</div>
+                            <div style="color:#64748b;font-size:.85rem;">Gerados via DomPDF com VIEWs SQL</div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="hero-card">
+                            <div class="hero-card-icon" style="background:rgba(245,158,11,0.15);">
+                                <i class="bi bi-shield-lock" style="color:#f59e0b;"></i>
+                            </div>
+                            <div class="text-white fw-semibold mb-1">Autenticação</div>
+                            <div style="color:#64748b;font-size:.85rem;">Login seguro com ROLE_ADMIN</div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="hero-card mt-4">
+                            <div class="hero-card-icon" style="background:rgba(239,68,68,0.15);">
+                                <i class="bi bi-bar-chart-line" style="color:#ef4444;"></i>
+                            </div>
+                            <div class="text-white fw-semibold mb-1">Dashboard</div>
+                            <div style="color:#64748b;font-size:.85rem;">Painel com rankings e estatísticas</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# FEATURES #}
+<section class="features-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <div class="section-label">Funcionalidades</div>
+            <h2 class="section-title">Tudo que você precisa para gerenciar seu acervo</h2>
+            <p class="section-subtitle">Módulos completos com validação, tratamento de erros e interface responsiva.</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon" style="background:rgba(99,102,241,0.12);">
+                        <i class="bi bi-journal-bookmark" style="color:#6366f1;"></i>
+                    </div>
+                    <div class="feature-title">Cadastro de Livros</div>
+                    <p class="feature-desc">Título, ISBN, edição, ano de publicação, preço, editora, autores e assuntos. Relacionamentos ManyToMany e ManyToOne.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon" style="background:rgba(16,185,129,0.12);">
+                        <i class="bi bi-person-lines-fill" style="color:#10b981;"></i>
+                    </div>
+                    <div class="feature-title">Gestão de Autores</div>
+                    <p class="feature-desc">Cadastro de autores com validação de unicidade. Um livro pode ter múltiplos autores.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon" style="background:rgba(245,158,11,0.12);">
+                        <i class="bi bi-building" style="color:#f59e0b;"></i>
+                    </div>
+                    <div class="feature-title">Editoras</div>
+                    <p class="feature-desc">Controle de editoras vinculadas aos livros. Proteção contra exclusão com livros associados.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon" style="background:rgba(239,68,68,0.12);">
+                        <i class="bi bi-tags" style="color:#ef4444;"></i>
+                    </div>
+                    <div class="feature-title">Assuntos / Categorias</div>
+                    <p class="feature-desc">Classificação dos livros por assunto. Relacionamento ManyToMany com os livros.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon" style="background:rgba(139,92,246,0.12);">
+                        <i class="bi bi-file-earmark-bar-graph" style="color:#8b5cf6;"></i>
+                    </div>
+                    <div class="feature-title">Relatórios com PDF</div>
+                    <p class="feature-desc">Relatórios por autor, editora e assunto gerados via VIEWs do banco de dados e exportados em PDF com DomPDF.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon" style="background:rgba(20,184,166,0.12);">
+                        <i class="bi bi-trophy" style="color:#14b8a6;"></i>
+                    </div>
+                    <div class="feature-title">Rankings e Estatísticas</div>
+                    <p class="feature-desc">Top autores, editoras e assuntos com mais livros. Livros mais caros. Tudo em tempo real.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon" style="background:rgba(249,115,22,0.12);">
+                        <i class="bi bi-shield-check" style="color:#f97316;"></i>
+                    </div>
+                    <div class="feature-title">Autenticação Segura</div>
+                    <p class="feature-desc">Login com e-mail e senha, controle de acesso por ROLE_ADMIN, proteção CSRF em todos os formulários.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon" style="background:rgba(99,102,241,0.12);">
+                        <i class="bi bi-people" style="color:#6366f1;"></i>
+                    </div>
+                    <div class="feature-title">Gestão de Usuários</div>
+                    <p class="feature-desc">Cadastro de usuários com perfis (Admin/Usuário), hash de senha seguro e proteção contra auto-exclusão.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon" style="background:rgba(16,185,129,0.12);">
+                        <i class="bi bi-shop" style="color:#10b981;"></i>
+                    </div>
+                    <div class="feature-title">Dados da Livraria</div>
+                    <p class="feature-desc">Cadastro da livraria com endereço completo via integração com a API ViaCEP para preenchimento automático.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# CTA #}
+<section class="cta-section">
+    <div class="container">
+        <h2 class="cta-title">Pronto para começar?</h2>
+        <p class="cta-subtitle">Acesse o painel administrativo e comece a gerenciar seu acervo agora.</p>
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+            <a href="{{ path('app_login') }}" class="btn-landing-primary">
+                <i class="bi bi-box-arrow-in-right"></i> Acessar o sistema
+            </a>
+            <a href="{{ path('app_home_tech') }}" class="btn-landing-outline">
+                <i class="bi bi-cpu"></i> Ver tecnologias utilizadas
+            </a>
+        </div>
+    </div>
+</section>
+
+{# FOOTER #}
+<footer class="landing-footer">
+    <div class="container d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <span><i class="bi bi-book-half"></i> {{ livraria.nome ?? 'Bookstore' }} — Sistema de Gerenciamento de Livros</span>
+        <span>Desenvolvido por <strong class="text-light">William B. Sena</strong> · Symfony 6.4</span>
+    </div>
+</footer>
+
+{% endblock %}
+
+{% block javascripts %}
+<script>
+window.addEventListener('scroll', function () {
+    var nav = document.getElementById('landing-nav');
+    if (window.scrollY > 50) nav.classList.add('scrolled');
+    else nav.classList.remove('scrolled');
+});
+</script>
+{% endblock %}
