@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\LivroRepository;
+use App\Trait\TimestampTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -11,6 +12,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: LivroRepository::class)]
 class Livro
 {
+    use TimestampTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -50,17 +53,11 @@ class Livro
     #[Assert\Count(min: 1, minMessage: 'Selecione pelo menos um assunto.')]
     private Collection $assuntos;
 
-    #[ORM\Column(type: 'datetime_immutable')]
-    private ?\DateTimeImmutable $createdAt = null;
-
-    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
-    private ?\DateTimeImmutable $updatedAt = null;
-
     public function __construct()
     {
         $this->autores = new ArrayCollection();
         $this->assuntos = new ArrayCollection();
-        $this->createdAt = new \DateTimeImmutable();
+        $this->initTimestamps();
     }
 
     public function getId(): ?int { return $this->id; }
@@ -90,12 +87,6 @@ class Livro
     public function getAssuntos(): Collection { return $this->assuntos; }
     public function addAssunto(Assunto $assunto): static { if (!$this->assuntos->contains($assunto)) { $this->assuntos->add($assunto); } return $this; }
     public function removeAssunto(Assunto $assunto): static { $this->assuntos->removeElement($assunto); return $this; }
-
-    public function getCreatedAt(): ?\DateTimeImmutable { return $this->createdAt; }
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static { $this->createdAt = $createdAt; return $this; }
-
-    public function getUpdatedAt(): ?\DateTimeImmutable { return $this->updatedAt; }
-    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static { $this->updatedAt = $updatedAt; return $this; }
 
     public function __toString(): string { return $this->titulo ?? ''; }
 }
