@@ -1,12 +1,17 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Login — Bookstore{% endblock %}
+{% block title %}Login — {{ livraria.nome ?? 'Bookstore' }}{% endblock %}
 
 {% block body %}
 <div class="d-flex justify-content-center align-items-center" style="min-height: 100vh;">
     <div class="card shadow" style="width: 400px;">
         <div class="card-body p-4">
-            <h4 class="card-title text-center mb-4"><i class="bi bi-book"></i> Bookstore</h4>
+            <h4 class="card-title text-center mb-2"><i class="bi bi-book"></i> {{ livraria.nome ?? 'Bookstore' }}</h4>
+            {% if livraria.descricao %}
+                <p class="text-center text-muted small mb-4">{{ livraria.descricao }}</p>
+            {% else %}
+                <p class="text-center text-muted small mb-4">Sistema de Gerenciamento de Livros</p>
+            {% endif %}
 
             {% if error %}
                 <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
@@ -25,6 +30,13 @@
                 <button type="submit" class="btn btn-primary w-100">Entrar</button>
             </form>
         </div>
+        {% if livraria.telefone or livraria.email %}
+        <div class="card-footer text-center small text-muted">
+            {% if livraria.telefone %}<i class="bi bi-telephone"></i> {{ livraria.telefone }}{% endif %}
+            {% if livraria.telefone and livraria.email %} | {% endif %}
+            {% if livraria.email %}<i class="bi bi-envelope"></i> {{ livraria.email }}{% endif %}
+        </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

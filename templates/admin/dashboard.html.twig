@@ -1,53 +1,33 @@
 {% extends 'admin/layout.html.twig' %}
 
-{% block title %}Dashboard — Bookstore{% endblock %}
+{% block title %}Dashboard — {{ livraria.nome ?? 'Bookstore' }}{% endblock %}
 
 {% block content %}
-<h2 class="mb-4">Dashboard</h2>
+<div class="mb-4">
+    <h2>Bem-vindo ao {{ livraria.nome ?? 'Bookstore' }}</h2>
+    {% if livraria.descricao %}
+        <p class="text-muted">{{ livraria.descricao }}</p>
+    {% endif %}
+</div>
+
+{% if livraria.telefone or livraria.email or livraria.cep %}
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body d-flex flex-wrap gap-4">
+        {% if livraria.telefone %}
+            <span class="text-muted"><i class="bi bi-telephone"></i> {{ livraria.telefone }}</span>
+        {% endif %}
+        {% if livraria.email %}
+            <span class="text-muted"><i class="bi bi-envelope"></i> {{ livraria.email }}</span>
+        {% endif %}
+        {% if livraria.cep %}
+            <span class="text-muted"><i class="bi bi-geo-alt"></i> {{ livraria.enderecoCompleto }}</span>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
 <div class="row g-4">
-    <div class="col-md-6">
-        <div class="card border-0 shadow-sm">
-            <div class="card-body d-flex align-items-center">
-                <div class="bg-primary bg-opacity-10 rounded-3 p-3 me-3">
-                    <i class="bi bi-tags fs-2 text-primary"></i>
-                </div>
-                <div>
-                    <h3 class="mb-0">{{ totalAssuntos }}</h3>
-                    <small class="text-muted">Assuntos cadastrados</small>
-                </div>
-                <a href="{{ path('app_assunto_index') }}" class="ms-auto btn btn-sm btn-outline-primary">Ver todos</a>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-6">
-        <div class="card border-0 shadow-sm">
-            <div class="card-body d-flex align-items-center">
-                <div class="bg-success bg-opacity-10 rounded-3 p-3 me-3">
-                    <i class="bi bi-building fs-2 text-success"></i>
-                </div>
-                <div>
-                    <h3 class="mb-0">{{ totalEditoras }}</h3>
-                    <small class="text-muted">Editoras cadastradas</small>
-                </div>
-                <a href="{{ path('app_editora_index') }}" class="ms-auto btn btn-sm btn-outline-success">Ver todas</a>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-6">
-        <div class="card border-0 shadow-sm">
-            <div class="card-body d-flex align-items-center">
-                <div class="bg-warning bg-opacity-10 rounded-3 p-3 me-3">
-                    <i class="bi bi-person fs-2 text-warning"></i>
-                </div>
-                <div>
-                    <h3 class="mb-0">{{ totalAutores }}</h3>
-                    <small class="text-muted">Autores cadastrados</small>
-                </div>
-                <a href="{{ path('app_autor_index') }}" class="ms-auto btn btn-sm btn-outline-warning">Ver todos</a>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-6">
+    <div class="col-md-4">
         <div class="card border-0 shadow-sm">
             <div class="card-body d-flex align-items-center">
                 <div class="bg-info bg-opacity-10 rounded-3 p-3 me-3">
@@ -55,9 +35,78 @@
                 </div>
                 <div>
                     <h3 class="mb-0">{{ totalLivros }}</h3>
-                    <small class="text-muted">Livros cadastrados</small>
+                    <small class="text-muted">Livros</small>
                 </div>
-                <a href="{{ path('app_livro_index') }}" class="ms-auto btn btn-sm btn-outline-info">Ver todos</a>
+                <a href="{{ path('app_livro_index') }}" class="ms-auto btn btn-sm btn-outline-info">Ver</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body d-flex align-items-center">
+                <div class="bg-warning bg-opacity-10 rounded-3 p-3 me-3">
+                    <i class="bi bi-person fs-2 text-warning"></i>
+                </div>
+                <div>
+                    <h3 class="mb-0">{{ totalAutores }}</h3>
+                    <small class="text-muted">Autores</small>
+                </div>
+                <a href="{{ path('app_autor_index') }}" class="ms-auto btn btn-sm btn-outline-warning">Ver</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body d-flex align-items-center">
+                <div class="bg-success bg-opacity-10 rounded-3 p-3 me-3">
+                    <i class="bi bi-building fs-2 text-success"></i>
+                </div>
+                <div>
+                    <h3 class="mb-0">{{ totalEditoras }}</h3>
+                    <small class="text-muted">Editoras</small>
+                </div>
+                <a href="{{ path('app_editora_index') }}" class="ms-auto btn btn-sm btn-outline-success">Ver</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body d-flex align-items-center">
+                <div class="bg-primary bg-opacity-10 rounded-3 p-3 me-3">
+                    <i class="bi bi-tags fs-2 text-primary"></i>
+                </div>
+                <div>
+                    <h3 class="mb-0">{{ totalAssuntos }}</h3>
+                    <small class="text-muted">Assuntos</small>
+                </div>
+                <a href="{{ path('app_assunto_index') }}" class="ms-auto btn btn-sm btn-outline-primary">Ver</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body d-flex align-items-center">
+                <div class="bg-secondary bg-opacity-10 rounded-3 p-3 me-3">
+                    <i class="bi bi-people fs-2 text-secondary"></i>
+                </div>
+                <div>
+                    <h3 class="mb-0">{{ totalUsuarios }}</h3>
+                    <small class="text-muted">Usuários</small>
+                </div>
+                <a href="{{ path('app_user_index') }}" class="ms-auto btn btn-sm btn-outline-secondary">Ver</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body d-flex align-items-center">
+                <div class="bg-danger bg-opacity-10 rounded-3 p-3 me-3">
+                    <i class="bi bi-bar-chart fs-2 text-danger"></i>
+                </div>
+                <div>
+                    <small class="text-muted">Relatórios</small>
+                </div>
+                <a href="{{ path('app_relatorio_index') }}" class="ms-auto btn btn-sm btn-outline-danger">Acessar</a>
             </div>
         </div>
     </div>
