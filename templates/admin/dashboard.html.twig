@@ -47,5 +47,19 @@
             </div>
         </div>
     </div>
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body d-flex align-items-center">
+                <div class="bg-info bg-opacity-10 rounded-3 p-3 me-3">
+                    <i class="bi bi-journal-text fs-2 text-info"></i>
+                </div>
+                <div>
+                    <h3 class="mb-0">{{ totalLivros }}</h3>
+                    <small class="text-muted">Livros cadastrados</small>
+                </div>
+                <a href="{{ path('app_livro_index') }}" class="ms-auto btn btn-sm btn-outline-info">Ver todos</a>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
