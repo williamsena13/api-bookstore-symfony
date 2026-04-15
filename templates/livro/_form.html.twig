@@ -1,42 +1,48 @@
 {{ form_start(form, {attr: {id: 'modal-form'}}) }}
-    <div class="row">
-        <div class="col-md-8 mb-3">
-            {{ form_row(form.titulo) }}
-        </div>
-        <div class="col-md-4 mb-3">
-            {{ form_row(form.isbn) }}
-        </div>
+<div class="row g-3">
+    <div class="col-md-8">
+        {{ form_label(form.titulo) }}
+        {{ form_widget(form.titulo, {attr: {class: 'form-control', placeholder: 'Título do livro'}}) }}
+        {{ form_errors(form.titulo) }}
     </div>
-    <div class="row">
-        <div class="col-md-3 mb-3">
-            {{ form_row(form.editora) }}
-        </div>
-        <div class="col-md-3 mb-3">
-            {{ form_row(form.anoPublicacao) }}
-        </div>
-        <div class="col-md-3 mb-3">
-            {{ form_row(form.edicao) }}
-        </div>
-        <div class="col-md-3 mb-3">
-            {{ form_row(form.preco) }}
-        </div>
+    <div class="col-md-4">
+        {{ form_label(form.isbn) }}
+        {{ form_widget(form.isbn, {attr: {class: 'form-control', placeholder: '978-0-00-000000-0'}}) }}
+        {{ form_errors(form.isbn) }}
     </div>
-    <div class="row">
-        <div class="col-md-6 mb-3">
-            {{ form_label(form.autores) }}
-            <small class="text-muted d-block mb-1">Segure Ctrl para selecionar vários</small>
-            {{ form_widget(form.autores) }}
-            {{ form_errors(form.autores) }}
-        </div>
-        <div class="col-md-6 mb-3">
-            {{ form_label(form.assuntos) }}
-            <small class="text-muted d-block mb-1">Segure Ctrl para selecionar vários</small>
-            {{ form_widget(form.assuntos) }}
-            {{ form_errors(form.assuntos) }}
-        </div>
+    <div class="col-md-4">
+        {{ form_label(form.editora) }}
+        {{ form_widget(form.editora, {attr: {class: 'form-select'}}) }}
+        {{ form_errors(form.editora) }}
     </div>
-    <div class="d-flex justify-content-end gap-2">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button type="submit" class="btn btn-success"><i class="bi bi-check-lg"></i> Salvar</button>
+    <div class="col-md-2">
+        {{ form_label(form.anoPublicacao) }}
+        {{ form_widget(form.anoPublicacao, {attr: {class: 'form-control', placeholder: '2024'}}) }}
+        {{ form_errors(form.anoPublicacao) }}
     </div>
+    <div class="col-md-2">
+        {{ form_label(form.edicao) }}
+        {{ form_widget(form.edicao, {attr: {class: 'form-control', placeholder: '1'}}) }}
+        {{ form_errors(form.edicao) }}
+    </div>
+    <div class="col-md-4">
+        {{ form_label(form.preco) }}
+        {{ form_widget(form.preco, {attr: {class: 'form-control', 'data-mask': 'money'}}) }}
+        {{ form_errors(form.preco) }}
+    </div>
+    <div class="col-md-6">
+        {{ form_label(form.autores) }}
+        {{ form_widget(form.autores, {attr: {class: 'form-select', 'data-placeholder': 'Selecione os autores...'}}) }}
+        {{ form_errors(form.autores) }}
+    </div>
+    <div class="col-md-6">
+        {{ form_label(form.assuntos) }}
+        {{ form_widget(form.assuntos, {attr: {class: 'form-select', 'data-placeholder': 'Selecione os assuntos...'}}) }}
+        {{ form_errors(form.assuntos) }}
+    </div>
+</div>
+<div class="d-flex justify-content-end gap-2 mt-3">
+    <button type="button" class="p-btn p-btn-secondary" data-bs-dismiss="modal"><i class="pi pi-times"></i> Cancelar</button>
+    <button type="submit" class="p-btn p-btn-primary"><i class="pi pi-check"></i> Salvar</button>
+</div>
 {{ form_end(form) }}

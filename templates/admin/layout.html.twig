@@ -1,64 +1,161 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-<div class="d-flex">
-    <div class="sidebar d-flex flex-column" style="width: 250px;">
-        <div class="p-3 text-white fw-bold fs-5 border-bottom border-secondary">
-            <i class="bi bi-book"></i> {{ livraria.nome ?? 'Bookstore' }}
-        </div>
-        <a href="{{ path('app_admin_dashboard') }}" class="{{ app.request.get('_route') == 'app_admin_dashboard' ? 'active' : '' }}">
-            <i class="bi bi-speedometer2"></i> Dashboard
+<div class="admin-wrapper" id="adminWrapper">
+
+    {# SIDEBAR #}
+    <aside class="sidebar" id="adminSidebar">
+        <a href="{{ path('app_admin_dashboard') }}" class="sidebar-brand">
+            {% if livraria.logoNavbar %}
+                <img src="{{ livraria.logoNavbar }}" alt="{{ livraria.nome }}" style="height:32px;max-width:32px;object-fit:contain;flex-shrink:0;">
+                <span>{{ livraria.nome ?? 'Bookstore' }}</span>
+            {% else %}
+                <div class="brand-icon"><i class="pi pi-book"></i></div>
+                <span>{{ livraria.nome ?? 'Bookstore' }}</span>
+            {% endif %}
         </a>
-        <a href="{{ path('app_assunto_index') }}" class="{{ app.request.get('_route') starts with 'app_assunto' ? 'active' : '' }}">
-            <i class="bi bi-tags"></i> Assuntos
-        </a>
-        <a href="{{ path('app_editora_index') }}" class="{{ app.request.get('_route') starts with 'app_editora' ? 'active' : '' }}">
-            <i class="bi bi-building"></i> Editoras
-        </a>
-        <a href="{{ path('app_autor_index') }}" class="{{ app.request.get('_route') starts with 'app_autor' ? 'active' : '' }}">
-            <i class="bi bi-person"></i> Autores
-        </a>
-        <a href="{{ path('app_livro_index') }}" class="{{ app.request.get('_route') starts with 'app_livro' ? 'active' : '' }}">
-            <i class="bi bi-journal-text"></i> Livros
-        </a>
-        <div class="border-top border-secondary mt-3 pt-2 px-3"><small class="text-secondary text-uppercase" style="font-size:.7rem;">Relatórios</small></div>
-        <a href="{{ path('app_relatorio_index') }}" class="{{ app.request.get('_route') == 'app_relatorio_index' ? 'active' : '' }}">
-            <i class="bi bi-bar-chart"></i> Painel
-        </a>
-        <a href="{{ path('app_relatorio_por_autor') }}" class="{{ app.request.get('_route') starts with 'app_relatorio_por_autor' ? 'active' : '' }}">
-            <i class="bi bi-person-lines-fill"></i> Por Autor
-        </a>
-        <a href="{{ path('app_relatorio_por_editora') }}" class="{{ app.request.get('_route') starts with 'app_relatorio_por_editora' ? 'active' : '' }}">
-            <i class="bi bi-building"></i> Por Editora
-        </a>
-        <a href="{{ path('app_relatorio_por_assunto') }}" class="{{ app.request.get('_route') starts with 'app_relatorio_por_assunto' ? 'active' : '' }}">
-            <i class="bi bi-tags"></i> Por Assunto
-        </a>
-        <a href="{{ path('app_relatorio_ranking') }}" class="{{ app.request.get('_route') == 'app_relatorio_ranking' ? 'active' : '' }}">
-            <i class="bi bi-trophy"></i> Rankings
-        </a>
-        <div class="border-top border-secondary mt-3 pt-2 px-3"><small class="text-secondary text-uppercase" style="font-size:.7rem;">Administração</small></div>
-        <a href="{{ path('app_user_index') }}" class="{{ app.request.get('_route') starts with 'app_user' ? 'active' : '' }}">
-            <i class="bi bi-people"></i> Usuários
-        </a>
-        <a href="{{ path('app_livraria_edit') }}" class="{{ app.request.get('_route') starts with 'app_livraria' ? 'active' : '' }}">
-            <i class="bi bi-shop"></i> Livraria
-        </a>
-        <div class="mt-auto border-top border-secondary p-3">
-            <small class="text-secondary">{{ app.user.nome ?? app.user.email }}</small>
-            <a href="{{ path('app_logout') }}" class="text-danger mt-1"><i class="bi bi-box-arrow-left"></i> Sair</a>
-        </div>
-    </div>
-    <div class="content flex-grow-1">
-        {% for type in ['success', 'warning', 'danger'] %}
-            {% for message in app.flashes(type) %}
-                <div class="alert alert-{{ type }} alert-dismissible fade show">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+
+        <nav class="sidebar-nav">
+            <a href="{{ path('app_admin_dashboard') }}" class="sidebar-link {{ app.request.get('_route') == 'app_admin_dashboard' ? 'active' : '' }}">
+                <i class="pi pi-home"></i> Dashboard
+            </a>
+
+            <div class="sidebar-section">Cadastros</div>
+            <a href="{{ path('app_livro_index') }}" class="sidebar-link {{ app.request.get('_route') starts with 'app_livro' ? 'active' : '' }}">
+                <i class="pi pi-book"></i> Livros
+            </a>
+            <a href="{{ path('app_autor_index') }}" class="sidebar-link {{ app.request.get('_route') starts with 'app_autor' ? 'active' : '' }}">
+                <i class="pi pi-user"></i> Autores
+            </a>
+            <a href="{{ path('app_editora_index') }}" class="sidebar-link {{ app.request.get('_route') starts with 'app_editora' ? 'active' : '' }}">
+                <i class="pi pi-building"></i> Editoras
+            </a>
+            <a href="{{ path('app_assunto_index') }}" class="sidebar-link {{ app.request.get('_route') starts with 'app_assunto' ? 'active' : '' }}">
+                <i class="pi pi-tag"></i> Assuntos
+            </a>
+
+            <div class="sidebar-section">Relatórios</div>
+            <a href="{{ path('app_relatorio_index') }}" class="sidebar-link {{ app.request.get('_route') == 'app_relatorio_index' ? 'active' : '' }}">
+                <i class="pi pi-chart-bar"></i> Painel
+            </a>
+            <a href="{{ path('app_relatorio_por_autor') }}" class="sidebar-link {{ app.request.get('_route') starts with 'app_relatorio_por_autor' ? 'active' : '' }}">
+                <i class="pi pi-users"></i> Por Autor
+            </a>
+            <a href="{{ path('app_relatorio_por_editora') }}" class="sidebar-link {{ app.request.get('_route') starts with 'app_relatorio_por_editora' ? 'active' : '' }}">
+                <i class="pi pi-building"></i> Por Editora
+            </a>
+            <a href="{{ path('app_relatorio_por_assunto') }}" class="sidebar-link {{ app.request.get('_route') starts with 'app_relatorio_por_assunto' ? 'active' : '' }}">
+                <i class="pi pi-tags"></i> Por Assunto
+            </a>
+            <a href="{{ path('app_relatorio_ranking') }}" class="sidebar-link {{ app.request.get('_route') == 'app_relatorio_ranking' ? 'active' : '' }}">
+                <i class="pi pi-star"></i> Rankings
+            </a>
+
+            <div class="sidebar-section">Administração</div>
+            <a href="{{ path('app_user_index') }}" class="sidebar-link {{ app.request.get('_route') starts with 'app_user' ? 'active' : '' }}">
+                <i class="pi pi-users"></i> Usuários
+            </a>
+            <a href="{{ path('app_livraria_edit') }}" class="sidebar-link {{ app.request.get('_route') starts with 'app_livraria' ? 'active' : '' }}">
+                <i class="pi pi-cog"></i> Livraria
+            </a>
+        </nav>
+    </aside>
+
+    {# MAIN #}
+    <main class="admin-main">
+        <header class="topbar">
+            <div class="topbar-breadcrumb">
+                <a href="{{ path('app_admin_dashboard') }}">Dashboard</a>
+                {% block breadcrumb %}{% endblock %}
+            </div>
+
+            <div class="topbar-title">{% block page_title %}{% endblock %}</div>
+
+            <div class="topbar-actions">
+
+                {# DARK MODE TOGGLE #}
+                <button class="topbar-icon-btn" id="darkModeBtn" title="Alternar modo escuro">
+                    <i class="pi pi-moon" id="darkModeIcon"></i>
+                </button>
+
+                {# USER DROPDOWN #}
+                <div class="topbar-user" id="userDropdown">
+                    <button class="topbar-user-btn" id="userDropdownBtn" aria-expanded="false">
+                        {% if app.user.foto is defined and app.user.foto %}
+                            <img src="{{ app.user.foto }}" class="topbar-avatar-img" alt="{{ app.user.nome }}">
+                        {% else %}
+                            <div class="topbar-avatar">{{ (app.user.nome ?? app.user.email)|first|upper }}</div>
+                        {% endif %}
+                        <div class="topbar-user-info">
+                            <span class="topbar-user-name">{{ app.user.nome ?? app.user.email }}</span>
+                            <span class="topbar-user-role">Administrador</span>
+                        </div>
+                        <i class="pi pi-chevron-down topbar-chevron"></i>
+                    </button>
+                    <div class="topbar-dropdown" id="userDropdownMenu">
+                        <div class="topbar-dropdown-header">
+                            {% if app.user.foto is defined and app.user.foto %}
+                                <img src="{{ app.user.foto }}" class="topbar-dropdown-avatar-img" alt="{{ app.user.nome }}">
+                            {% else %}
+                                <div class="topbar-dropdown-avatar">{{ (app.user.nome ?? app.user.email)|first|upper }}</div>
+                            {% endif %}
+                            <div>
+                                <div class="topbar-dropdown-name">{{ app.user.nome ?? '—' }}</div>
+                                <div class="topbar-dropdown-email">{{ app.user.email }}</div>
+                            </div>
+                        </div>
+                        <div class="topbar-dropdown-divider"></div>
+                        <a href="{{ path('app_profile') }}" class="topbar-dropdown-item">
+                            <i class="pi pi-user-edit"></i> Meu Perfil
+                        </a>
+                        <a href="{{ path('app_livraria_edit') }}" class="topbar-dropdown-item">
+                            <i class="pi pi-cog"></i> Configurações
+                        </a>
+                        <div class="topbar-dropdown-divider"></div>
+                        <a href="{{ path('app_logout') }}" class="topbar-dropdown-item topbar-dropdown-item-danger">
+                            <i class="pi pi-sign-out"></i> Sair
+                        </a>
+                    </div>
                 </div>
-            {% endfor %}
-        {% endfor %}
-        {% block content %}{% endblock %}
-    </div>
+            </div>
+        </header>
+
+        <div class="page-content">
+            <div id="alert-container">
+                {% for type in ['success', 'warning', 'danger'] %}
+                    {% for message in app.flashes(type) %}
+                        <div class="p-alert p-alert-{{ type == 'danger' ? 'danger' : (type == 'warning' ? 'warning' : 'success') }}">
+                            <i class="pi pi-{{ type == 'danger' ? 'times-circle' : (type == 'warning' ? 'exclamation-triangle' : 'check-circle') }}"></i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
 </div>
+
+<script src="/js/admin-theme.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // User dropdown
+    var btn = document.getElementById('userDropdownBtn');
+    var menu = document.getElementById('userDropdownMenu');
+    if (btn && menu) {
+        btn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            var open = menu.classList.toggle('open');
+            btn.setAttribute('aria-expanded', open);
+            btn.querySelector('.topbar-chevron').style.transform = open ? 'rotate(180deg)' : '';
+        });
+        document.addEventListener('click', function () {
+            menu.classList.remove('open');
+            btn.setAttribute('aria-expanded', false);
+            btn.querySelector('.topbar-chevron').style.transform = '';
+        });
+    }
+});
+</script>
 {% endblock %}

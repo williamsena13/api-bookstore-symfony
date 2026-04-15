@@ -1,65 +1,56 @@
 {% extends 'admin/layout.html.twig' %}
 
 {% block title %}Editoras — {{ livraria.nome ?? 'Bookstore' }}{% endblock %}
+{% block page_title %}Editoras{% endblock %}
+{% block breadcrumb %}<i class="pi pi-angle-right"></i> Editoras{% endblock %}
 
 {% block content %}
-<div id="alert-container"></div>
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Editoras</h2>
-    <button class="btn btn-success btn-modal" data-url="{{ path('app_editora_new') }}" data-title="Nova Editora">
-        <i class="bi bi-plus-lg"></i> Nova Editora
-    </button>
-</div>
-
-<div class="card border-0 shadow-sm">
-    <div class="table-responsive">
-        <table class="table table-hover mb-0">
-            <thead class="table-light">
-                <tr>
-                    <th>#</th>
-                    <th>Nome</th>
-                    <th>Criado em</th>
-                    <th class="text-end">Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for editora in editoras %}
-                <tr>
-                    <td>{{ editora.id }}</td>
-                    <td>{{ editora.nome }}</td>
-                    <td>{{ editora.createdAt|date('d/m/Y H:i') }}</td>
-                    <td class="text-end">
-                        <button class="btn btn-sm btn-outline-warning btn-modal" data-url="{{ path('app_editora_edit', {id: editora.id}) }}" data-title="Editar Editora">
-                            <i class="bi bi-pencil"></i>
-                        </button>
-                        <form method="post" action="{{ path('app_editora_delete', {id: editora.id}) }}" class="d-inline" onsubmit="return confirm('Tem certeza que deseja excluir?')">
-                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ editora.id) }}">
-                            <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
-                        </form>
-                    </td>
-                </tr>
-                {% else %}
-                <tr><td colspan="4" class="text-center text-muted py-4">Nenhuma editora cadastrada.</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
+<div class="p-card">
+    <div class="p-card-header">
+        <h2 class="p-card-title"><i class="pi pi-building"></i> Editoras</h2>
+        <button class="p-btn p-btn-success p-btn-sm btn-modal" data-url="{{ path('app_editora_new') }}" data-title="Nova Editora">
+            <i class="pi pi-plus"></i> Nova Editora
+        </button>
     </div>
-</div>
-
-<!-- Modal -->
-<div class="modal fade" id="crudModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body"></div>
+    <div class="p-card-body">
+        <div class="dt-wrapper">
+            <table class="p-datatable w-full" data-sortable="[0,1,2]">
+                <thead>
+                    <tr><th>#</th><th>Nome</th><th>Criado em</th><th>Ações</th></tr>
+                </thead>
+                <tbody>
+                    {% for editora in editoras %}
+                    <tr>
+                        <td>{{ editora.id }}</td>
+                        <td><strong>{{ editora.nome }}</strong></td>
+                        <td>{{ editora.createdAt|date('d/m/Y H:i') }}</td>
+                        <td>
+                            <div class="flex gap-2">
+                                <button class="p-btn p-btn-warning p-btn-sm btn-modal" data-url="{{ path('app_editora_edit', {id: editora.id}) }}" data-title="Editar Editora">
+                                    <i class="pi pi-pencil"></i>
+                                </button>
+                                <form method="post" action="{{ path('app_editora_delete', {id: editora.id}) }}" class="d-inline">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ editora.id) }}">
+                                    <button type="button" class="p-btn p-btn-danger p-btn-sm btn-delete" data-label='"{{ editora.nome }}"'>
+                                        <i class="pi pi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="4" class="text-center" style="color:var(--text-secondary);padding:2rem;">Nenhuma editora cadastrada.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
+
+{% include 'admin/_modals.html.twig' %}
 {% endblock %}
 
 {% block javascripts %}
-{% include 'admin/_modal_js.html.twig' %}
+<script src="/js/datatable.js"></script>
+<script src="/js/modal-crud.js"></script>
 {% endblock %}

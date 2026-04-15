@@ -1,65 +1,56 @@
 {% extends 'admin/layout.html.twig' %}
 
 {% block title %}Autores — {{ livraria.nome ?? 'Bookstore' }}{% endblock %}
+{% block page_title %}Autores{% endblock %}
+{% block breadcrumb %}<i class="pi pi-angle-right"></i> Autores{% endblock %}
 
 {% block content %}
-<div id="alert-container"></div>
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Autores</h2>
-    <button class="btn btn-success btn-modal" data-url="{{ path('app_autor_new') }}" data-title="Novo Autor">
-        <i class="bi bi-plus-lg"></i> Novo Autor
-    </button>
-</div>
-
-<div class="card border-0 shadow-sm">
-    <div class="table-responsive">
-        <table class="table table-hover mb-0">
-            <thead class="table-light">
-                <tr>
-                    <th>#</th>
-                    <th>Nome</th>
-                    <th>Criado em</th>
-                    <th class="text-end">Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for autor in autores %}
-                <tr>
-                    <td>{{ autor.id }}</td>
-                    <td>{{ autor.nome }}</td>
-                    <td>{{ autor.createdAt|date('d/m/Y H:i') }}</td>
-                    <td class="text-end">
-                        <button class="btn btn-sm btn-outline-warning btn-modal" data-url="{{ path('app_autor_edit', {id: autor.id}) }}" data-title="Editar Autor">
-                            <i class="bi bi-pencil"></i>
-                        </button>
-                        <form method="post" action="{{ path('app_autor_delete', {id: autor.id}) }}" class="d-inline" onsubmit="return confirm('Tem certeza que deseja excluir?')">
-                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ autor.id) }}">
-                            <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
-                        </form>
-                    </td>
-                </tr>
-                {% else %}
-                <tr><td colspan="4" class="text-center text-muted py-4">Nenhum autor cadastrado.</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
+<div class="p-card">
+    <div class="p-card-header">
+        <h2 class="p-card-title"><i class="pi pi-user"></i> Autores</h2>
+        <button class="p-btn p-btn-success p-btn-sm btn-modal" data-url="{{ path('app_autor_new') }}" data-title="Novo Autor">
+            <i class="pi pi-plus"></i> Novo Autor
+        </button>
     </div>
-</div>
-
-<!-- Modal -->
-<div class="modal fade" id="crudModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body"></div>
+    <div class="p-card-body">
+        <div class="dt-wrapper">
+            <table class="p-datatable w-full" data-sortable="[0,1,2]">
+                <thead>
+                    <tr><th>#</th><th>Nome</th><th>Criado em</th><th>Ações</th></tr>
+                </thead>
+                <tbody>
+                    {% for autor in autores %}
+                    <tr>
+                        <td>{{ autor.id }}</td>
+                        <td><strong>{{ autor.nome }}</strong></td>
+                        <td>{{ autor.createdAt|date('d/m/Y H:i') }}</td>
+                        <td>
+                            <div class="flex gap-2">
+                                <button class="p-btn p-btn-warning p-btn-sm btn-modal" data-url="{{ path('app_autor_edit', {id: autor.id}) }}" data-title="Editar Autor">
+                                    <i class="pi pi-pencil"></i>
+                                </button>
+                                <form method="post" action="{{ path('app_autor_delete', {id: autor.id}) }}" class="d-inline">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ autor.id) }}">
+                                    <button type="button" class="p-btn p-btn-danger p-btn-sm btn-delete" data-label='"{{ autor.nome }}"'>
+                                        <i class="pi pi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="4" class="text-center" style="color:var(--text-secondary);padding:2rem;">Nenhum autor cadastrado.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
+
+{% include 'admin/_modals.html.twig' %}
 {% endblock %}
 
 {% block javascripts %}
-{% include 'admin/_modal_js.html.twig' %}
+<script src="/js/datatable.js"></script>
+<script src="/js/modal-crud.js"></script>
 {% endblock %}
