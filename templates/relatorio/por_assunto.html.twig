@@ -61,28 +61,33 @@
 
 {% if agrupado|length > 0 %}
 {% for assunto, livros in agrupado %}
-<div class="p-card mb-3">
-    <div class="p-card-header" style="background:#7c2d12;">
-        <span style="color:#fff;font-weight:600;"><i class="pi pi-tag" style="color:#fca5a5;"></i> {{ assunto }}</span>
-        <span class="p-badge p-badge-danger">{{ livros|length }}</span>
+<div class="p-card mb-3 admin-toggle-card">
+    <div class="p-card-header admin-toggle-header" style="cursor:pointer;user-select:none;">
+        <span style="font-weight:600;"><i class="pi pi-tag" style="color:#ef4444;"></i> {{ assunto }}</span>
+        <div style="display:flex;align-items:center;gap:.75rem;">
+            <span class="p-badge p-badge-danger">{{ livros|length }}</span>
+            <i class="pi pi-chevron-down" style="font-size:.75rem;color:var(--text-secondary);transition:transform .2s;"></i>
+        </div>
     </div>
-    <div class="p-card-body" style="padding:0;">
-        <div class="dt-wrapper">
-            <table class="p-datatable w-full" data-sortable="[0,1,2,3,4]">
-                <thead><tr><th>Título</th><th>Editora</th><th>Ed.</th><th>Ano</th><th>Preço</th><th>Autores</th></tr></thead>
-                <tbody>
-                    {% for l in livros %}
-                    <tr>
-                        <td><strong>{{ l.livro_titulo }}</strong></td>
-                        <td>{{ l.editora ?? '—' }}</td>
-                        <td>{{ l.edicao ? l.edicao ~ 'ª' : '—' }}</td>
-                        <td>{{ l.ano_publicacao ?? '—' }}</td>
-                        <td>{% if l.preco %}<span style="color:var(--success);font-weight:600;">R$ {{ l.preco|number_format(2, ',', '.') }}</span>{% else %}—{% endif %}</td>
-                        <td>{{ l.autores|default('—') }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+    <div class="admin-toggle-body" style="overflow:hidden;transition:max-height .25s ease,opacity .2s;max-height:0;opacity:0;">
+        <div class="p-card-body" style="padding:0;">
+            <div class="dt-wrapper">
+                <table class="p-datatable w-full" data-order="0,asc">
+                    <thead><tr><th>Título</th><th>Editora</th><th>Ed.</th><th>Ano</th><th>Preço</th><th>Autores</th></tr></thead>
+                    <tbody>
+                        {% for l in livros %}
+                        <tr>
+                            <td><strong>{{ l.livro_titulo }}</strong></td>
+                            <td>{{ l.editora ?? '—' }}</td>
+                            <td>{{ l.edicao ? l.edicao ~ 'ª' : '—' }}</td>
+                            <td>{{ l.ano_publicacao ?? '—' }}</td>
+                            <td>{% if l.preco %}<span style="color:var(--success);font-weight:600;">R$ {{ l.preco|number_format(2, ',', '.') }}</span>{% else %}—{% endif %}</td>
+                            <td>{{ l.autores|default('—') }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
@@ -99,6 +104,17 @@
 <script src="/js/datatable.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.admin-toggle-header').forEach(function (h) {
+        h.addEventListener('click', function () {
+            var body = this.nextElementSibling;
+            var icon = this.querySelector('.pi-chevron-down');
+            var open = body.style.maxHeight !== '0px' && body.style.maxHeight !== '';
+            body.style.maxHeight = open ? '0' : body.scrollHeight + 200 + 'px';
+            body.style.opacity = open ? '0' : '1';
+            if (icon) icon.style.transform = open ? 'rotate(-90deg)' : '';
+        });
+    });
+
     const palette = ['#6366f1','#22c55e','#f59e0b','#ef4444','#06b6d4','#a855f7','#f97316','#14b8a6','#ec4899','#84cc16'];
     const labels = {{ agrupado|keys|json_encode|raw }};
     const totais = [{% for a, livros in agrupado %}{{ livros|length }},{% endfor %}];

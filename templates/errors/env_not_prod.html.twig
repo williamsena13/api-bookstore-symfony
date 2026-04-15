@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Sistema em configuração{% endblock %}
+
+{% block body %}
+<div class="d-flex flex-column align-items-center justify-content-center" style="min-height:100vh; background:var(--cor-primaria,#1e3a5f);">
+    <div class="text-center text-white p-5">
+        <i class="pi pi-cog" style="font-size:4rem;opacity:.6;"></i>
+        <h1 class="fw-bold mt-3" style="font-size:3rem;">Em configuração</h1>
+        <p class="fs-5 mb-4">
+            O ambiente de produção não está configurado corretamente.<br>
+            Verifique o arquivo <code>.env.local</code> e defina <code>APP_ENV=prod</code>.
+        </p>
+    </div>
+</div>
+{% endblock %}

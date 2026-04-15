@@ -8,13 +8,19 @@
 <div class="p-card">
     <div class="p-card-header">
         <h2 class="p-card-title"><i class="pi pi-users"></i> Usuários</h2>
-        <button class="p-btn p-btn-success p-btn-sm btn-modal" data-url="{{ path('app_user_new') }}" data-title="Novo Usuário">
-            <i class="pi pi-plus"></i> Novo Usuário
-        </button>
+        <div class="d-flex align-items-center gap-2">
+            <div class="dt-header-search" data-dt-search-for="tabelaUsuarios">
+                <i class="pi pi-search" style="color:var(--text-secondary);font-size:.85rem;"></i>
+                <input type="text" placeholder="Pesquisar..." style="border:none;outline:none;background:none;font-size:.85rem;color:var(--text-primary);width:160px;">
+            </div>
+            <button class="p-btn p-btn-success p-btn-sm btn-modal" data-url="{{ path('app_user_new') }}" data-title="Novo Usuário">
+                <i class="pi pi-plus"></i> Novo Usuário
+            </button>
+        </div>
     </div>
     <div class="p-card-body">
         <div class="dt-wrapper">
-            <table class="p-datatable w-full" data-sortable="[0,1,2,3]">
+            <table class="p-datatable w-full" id="tabelaUsuarios" data-order="0,desc">
                 <thead>
                     <tr><th>#</th><th>Nome</th><th>E-mail</th><th>Perfil</th><th>Ações</th></tr>
                 </thead>

@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Acesso negado{% endblock %}
+
+{% block body %}
+<div class="d-flex flex-column align-items-center justify-content-center" style="min-height:100vh; background:var(--cor-primaria,#1e3a5f);">
+    <div class="text-center text-white p-5">
+        <i class="pi pi-lock" style="font-size:4rem;opacity:.6;"></i>
+        <h1 class="display-1 fw-bold mt-3">403</h1>
+        <p class="fs-4 mb-4">Você não tem permissão para acessar esta página.</p>
+        <a href="/" class="btn btn-light px-4">
+            <i class="pi pi-home me-2"></i>Voltar ao início
+        </a>
+    </div>
+</div>
+{% endblock %}
