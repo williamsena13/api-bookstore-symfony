@@ -7,12 +7,10 @@
     --sidebar-bg: {{ livraria.corSidebar ?? '#1e1e2e' }};
 }
 
-/* Topbar border */
-.topbar { border-bottom-color: {{ livraria.corPrimaria ?? '#6366f1' }} !important; }
-
-/* Topbar background com cor primária suave */
+/* Topbar */
 .topbar {
-    background: linear-gradient(135deg, {{ livraria.corPrimaria ?? '#6366f1' }}08 0%, var(--card-bg) 60%) !important;
+    background: {{ livraria.corSidebar ?? '#1e1e2e' }} !important;
+    border-bottom-color: {{ livraria.corPrimaria ?? '#6366f1' }}44 !important;
 }
 
 /* Sidebar active */
