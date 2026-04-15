@@ -5,6 +5,9 @@
 compose.override.yaml
 symfony.lock
 
+###> uploads ###
+/public/uploads/
+
 .env
 /.env.local
 /.env.local.php
