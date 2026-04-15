@@ -17,7 +17,10 @@
         <a href="{{ path('app_home') }}" class="text-white text-decoration-none fw-bold fs-5">
             <i class="bi bi-book-half text-indigo"></i> {{ livraria.nome ?? 'Bookstore' }}
         </a>
-        <div class="d-flex align-items-center gap-3">
+        <button class="landing-nav-toggle" id="landingNavToggle" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
+        <div class="landing-nav-links" id="landingNavLinks">
             <a href="{{ path('app_home_tech') }}" class="btn-landing-outline py-2 px-3" style="font-size:.85rem;">
                 <i class="bi bi-cpu"></i> Tecnologias
             </a>
@@ -122,42 +125,51 @@
         </div>
         <div class="row g-4">
             <div class="col-md-4">
-                <div class="feature-card">
+                <a href="{{ path('app_public_livros') }}" class="feature-card-link">
+                <div class="feature-card" id="feature-livros">
                     <div class="feature-icon" style="background:rgba(99,102,241,0.12);">
                         <i class="bi bi-journal-bookmark" style="color:#6366f1;"></i>
                     </div>
                     <div class="feature-title">Cadastro de Livros</div>
                     <p class="feature-desc">Título, ISBN, edição, ano de publicação, preço, editora, autores e assuntos. Relacionamentos ManyToMany e ManyToOne.</p>
                 </div>
+                </a>
             </div>
             <div class="col-md-4">
-                <div class="feature-card">
+                <a href="{{ path('app_public_autores') }}" class="feature-card-link">
+                <div class="feature-card" id="feature-autores">
                     <div class="feature-icon" style="background:rgba(16,185,129,0.12);">
                         <i class="bi bi-person-lines-fill" style="color:#10b981;"></i>
                     </div>
                     <div class="feature-title">Gestão de Autores</div>
                     <p class="feature-desc">Cadastro de autores com validação de unicidade. Um livro pode ter múltiplos autores.</p>
                 </div>
+                </a>
             </div>
             <div class="col-md-4">
-                <div class="feature-card">
+                <a href="{{ path('app_public_editoras') }}" class="feature-card-link">
+                <div class="feature-card" id="feature-editoras">
                     <div class="feature-icon" style="background:rgba(245,158,11,0.12);">
                         <i class="bi bi-building" style="color:#f59e0b;"></i>
                     </div>
                     <div class="feature-title">Editoras</div>
                     <p class="feature-desc">Controle de editoras vinculadas aos livros. Proteção contra exclusão com livros associados.</p>
                 </div>
+                </a>
             </div>
             <div class="col-md-4">
-                <div class="feature-card">
+                <a href="{{ path('app_public_assuntos') }}" class="feature-card-link">
+                <div class="feature-card" id="feature-assuntos">
                     <div class="feature-icon" style="background:rgba(239,68,68,0.12);">
                         <i class="bi bi-tags" style="color:#ef4444;"></i>
                     </div>
                     <div class="feature-title">Assuntos / Categorias</div>
                     <p class="feature-desc">Classificação dos livros por assunto. Relacionamento ManyToMany com os livros.</p>
                 </div>
+                </a>
             </div>
             <div class="col-md-4">
+                <a href="{{ path('app_public_relatorio_por_autor') }}" class="feature-card-link">
                 <div class="feature-card">
                     <div class="feature-icon" style="background:rgba(139,92,246,0.12);">
                         <i class="bi bi-file-earmark-bar-graph" style="color:#8b5cf6;"></i>
@@ -165,8 +177,10 @@
                     <div class="feature-title">Relatórios com PDF</div>
                     <p class="feature-desc">Relatórios por autor, editora e assunto gerados via VIEWs do banco de dados e exportados em PDF com DomPDF.</p>
                 </div>
+                </a>
             </div>
             <div class="col-md-4">
+                <a href="{{ path('app_public_relatorio_ranking') }}" class="feature-card-link">
                 <div class="feature-card">
                     <div class="feature-icon" style="background:rgba(20,184,166,0.12);">
                         <i class="bi bi-trophy" style="color:#14b8a6;"></i>
@@ -174,8 +188,10 @@
                     <div class="feature-title">Rankings e Estatísticas</div>
                     <p class="feature-desc">Top autores, editoras e assuntos com mais livros. Livros mais caros. Tudo em tempo real.</p>
                 </div>
+                </a>
             </div>
             <div class="col-md-4">
+                <a href="{{ path('app_login') }}" class="feature-card-link">
                 <div class="feature-card">
                     <div class="feature-icon" style="background:rgba(249,115,22,0.12);">
                         <i class="bi bi-shield-check" style="color:#f97316;"></i>
@@ -183,6 +199,7 @@
                     <div class="feature-title">Autenticação Segura</div>
                     <p class="feature-desc">Login com e-mail e senha, controle de acesso por ROLE_ADMIN, proteção CSRF em todos os formulários.</p>
                 </div>
+                </a>
             </div>
             <div class="col-md-4">
                 <div class="feature-card">
@@ -274,6 +291,10 @@ window.addEventListener('scroll', function () {
     var nav = document.getElementById('landing-nav');
     if (window.scrollY > 50) nav.classList.add('scrolled');
     else nav.classList.remove('scrolled');
+});
+document.getElementById('landingNavToggle').addEventListener('click', function () {
+    this.classList.toggle('open');
+    document.getElementById('landingNavLinks').classList.toggle('open');
 });
 </script>
 {% endblock %}
