@@ -17,6 +17,7 @@ class Livraria
     #[ORM\Column]
     private ?int $id = null;
 
+    // ===== INFORMAÇÕES GERAIS =====
     #[ORM\Column(length: 100)]
     #[Assert\NotBlank(message: 'O nome é obrigatório.')]
     private ?string $nome = null;
@@ -30,6 +31,7 @@ class Livraria
     #[ORM\Column(length: 100, nullable: true)]
     private ?string $email = null;
 
+    // ===== ENDEREÇO =====
     #[ORM\Column(length: 9, nullable: true)]
     private ?string $cep = null;
 
@@ -51,9 +53,39 @@ class Livraria
     #[ORM\Column(length: 2, nullable: true)]
     private ?string $uf = null;
 
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 7, nullable: true)]
+    private ?string $latitude = null;
+
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 7, nullable: true)]
+    private ?string $longitude = null;
+
+    // ===== IDENTIDADE VISUAL =====
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $favicon = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $logoNavbar = null;
+
+    // ===== TEMA =====
+    #[ORM\Column(length: 7, nullable: true)]
+    private ?string $corPrimaria = null;
+
+    #[ORM\Column(length: 7, nullable: true)]
+    private ?string $corSecundaria = null;
+
+    #[ORM\Column(length: 7, nullable: true)]
+    private ?string $corSidebar = null;
+
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $temaAdmin = null; // 'light' | 'dark'
+
     public function __construct()
     {
         $this->initTimestamps();
+        $this->corPrimaria = '#6366f1';
+        $this->corSecundaria = '#22c55e';
+        $this->corSidebar = '#1e1e2e';
+        $this->temaAdmin = 'light';
     }
 
     public function getId(): ?int { return $this->id; }
@@ -91,6 +123,30 @@ class Livraria
     public function getUf(): ?string { return $this->uf; }
     public function setUf(?string $uf): static { $this->uf = $uf; return $this; }
 
+    public function getLatitude(): ?string { return $this->latitude; }
+    public function setLatitude(?string $latitude): static { $this->latitude = $latitude; return $this; }
+
+    public function getLongitude(): ?string { return $this->longitude; }
+    public function setLongitude(?string $longitude): static { $this->longitude = $longitude; return $this; }
+
+    public function getFavicon(): ?string { return $this->favicon; }
+    public function setFavicon(?string $favicon): static { $this->favicon = $favicon; return $this; }
+
+    public function getLogoNavbar(): ?string { return $this->logoNavbar; }
+    public function setLogoNavbar(?string $logoNavbar): static { $this->logoNavbar = $logoNavbar; return $this; }
+
+    public function getCorPrimaria(): ?string { return $this->corPrimaria; }
+    public function setCorPrimaria(?string $corPrimaria): static { $this->corPrimaria = $corPrimaria; return $this; }
+
+    public function getCorSecundaria(): ?string { return $this->corSecundaria; }
+    public function setCorSecundaria(?string $corSecundaria): static { $this->corSecundaria = $corSecundaria; return $this; }
+
+    public function getCorSidebar(): ?string { return $this->corSidebar; }
+    public function setCorSidebar(?string $corSidebar): static { $this->corSidebar = $corSidebar; return $this; }
+
+    public function getTemaAdmin(): ?string { return $this->temaAdmin; }
+    public function setTemaAdmin(?string $temaAdmin): static { $this->temaAdmin = $temaAdmin; return $this; }
+
     public function getEnderecoCompleto(): string
     {
         $partes = array_filter([
@@ -102,6 +158,11 @@ class Livraria
             $this->cep ? 'CEP: ' . $this->cep : null,
         ]);
         return implode(', ', $partes);
+    }
+
+    public function hasCoordinates(): bool
+    {
+        return $this->latitude !== null && $this->longitude !== null;
     }
 
     public function __toString(): string { return $this->nome ?? ''; }

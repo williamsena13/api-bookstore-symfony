@@ -1,0 +1,62 @@
+<style>
+:root {
+    --primary: {{ livraria.corPrimaria ?? '#6366f1' }};
+    --primary-dark: {{ livraria.corPrimaria ?? '#6366f1' }};
+    --primary-light: {{ livraria.corPrimaria ?? '#6366f1' }}22;
+    --success: {{ livraria.corSecundaria ?? '#22c55e' }};
+    --sidebar-bg: {{ livraria.corSidebar ?? '#1e1e2e' }};
+}
+
+/* Topbar border */
+.topbar { border-bottom-color: {{ livraria.corPrimaria ?? '#6366f1' }} !important; }
+
+/* Topbar background com cor primária suave */
+.topbar {
+    background: linear-gradient(135deg, {{ livraria.corPrimaria ?? '#6366f1' }}08 0%, var(--card-bg) 60%) !important;
+}
+
+/* Sidebar active */
+.sidebar-link.active { border-left-color: {{ livraria.corPrimaria ?? '#6366f1' }} !important; }
+.sidebar-link:hover { border-left-color: {{ livraria.corPrimaria ?? '#6366f1' }}66 !important; }
+
+/* Buttons */
+.p-btn-primary { background: {{ livraria.corPrimaria ?? '#6366f1' }}; }
+.p-btn-success { background: {{ livraria.corSecundaria ?? '#22c55e' }}; }
+
+/* Badges */
+.p-badge-primary { background: {{ livraria.corPrimaria ?? '#6366f1' }}22; color: {{ livraria.corPrimaria ?? '#6366f1' }}; }
+
+/* Nav tabs active */
+.nav-tabs .nav-link.active { color: {{ livraria.corPrimaria ?? '#6366f1' }}; border-bottom-color: {{ livraria.corPrimaria ?? '#6366f1' }}; }
+.nav-tabs .nav-link:hover { color: {{ livraria.corPrimaria ?? '#6366f1' }}; }
+
+/* DataTable pagination */
+.dataTables_wrapper .dataTables_paginate .paginate_button.current { background: {{ livraria.corPrimaria ?? '#6366f1' }} !important; border-color: {{ livraria.corPrimaria ?? '#6366f1' }} !important; }
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover:not(.current) { background: {{ livraria.corPrimaria ?? '#6366f1' }}22 !important; border-color: {{ livraria.corPrimaria ?? '#6366f1' }} !important; color: {{ livraria.corPrimaria ?? '#6366f1' }} !important; }
+
+/* Form focus */
+.form-control:focus, .form-select:focus,
+input[type="text"]:not(.ts-control *):focus,
+input[type="email"]:focus, input[type="number"]:focus,
+input[type="password"]:focus, textarea:focus {
+    border-color: {{ livraria.corPrimaria ?? '#6366f1' }} !important;
+    box-shadow: 0 0 0 3px {{ livraria.corPrimaria ?? '#6366f1' }}22 !important;
+}
+
+/* TomSelect focus */
+.ts-wrapper.focus .ts-control {
+    border-color: {{ livraria.corPrimaria ?? '#6366f1' }} !important;
+    box-shadow: 0 0 0 3px {{ livraria.corPrimaria ?? '#6366f1' }}22 !important;
+}
+.ts-dropdown .ts-option:hover, .ts-dropdown .option:hover {
+    background: {{ livraria.corPrimaria ?? '#6366f1' }}22 !important;
+    color: {{ livraria.corPrimaria ?? '#6366f1' }} !important;
+}
+.ts-item { background: {{ livraria.corPrimaria ?? '#6366f1' }}22 !important; color: {{ livraria.corPrimaria ?? '#6366f1' }} !important; }
+
+/* Stat card link */
+.stat-link { color: {{ livraria.corPrimaria ?? '#6366f1' }}; }
+
+/* Brand icon */
+.brand-icon { background: {{ livraria.corPrimaria ?? '#6366f1' }}; }
+</style>
