@@ -19,7 +19,7 @@ Sistema MVP para gerenciamento de livros desenvolvido com Symfony 6.4, incluindo
 ## Tecnologias
 
 ### Backend
-- PHP >= 8.1
+- PHP >= 8.2
 - Symfony 6.4 LTS
 - Doctrine ORM 3.6
 - DomPDF 3.x (geração de relatórios em PDF)
@@ -127,7 +127,7 @@ Sistema MVP para gerenciamento de livros desenvolvido com Symfony 6.4, incluindo
 
 ### Pré-requisitos
 
-- PHP >= 8.1
+- PHP >= 8.2
 - Composer
 - MySQL 8.0+
 
@@ -269,6 +269,72 @@ public/
 - **Twig Global** — `AppExtension` disponibiliza dados da livraria em todos os templates
 - **CSS Variables** — `_theme_css.html.twig` injeta cores do banco como variáveis CSS
 - **Error Handling** — Try/catch específicos para UniqueConstraint, ForeignKey e Throwable
+
+---
+
+## Testes
+
+### Configurar o banco de testes
+
+```bash
+php bin/console doctrine:database:create --env=test
+php bin/console doctrine:migrations:migrate --no-interaction --env=test
+php bin/console app:create-admin --env=test
+```
+
+### Executar os testes
+
+```bash
+# Todos os testes
+php bin/phpunit
+
+# Com saída detalhada
+php bin/phpunit --testdox
+
+# Por suite
+php bin/phpunit tests/Entity
+php bin/phpunit tests/Service
+php bin/phpunit tests/Controller
+```
+
+### Resultado esperado
+
+```
+OK (68 tests, 129 assertions)
+```
+
+### Cobertura dos testes
+
+| Suite | Tipo | O que cobre |
+|---|---|---|
+| `Entity/LivroTest` | Unit | toString, timestamps, coleções ManyToMany |
+| `Entity/LivrariaTest` | Unit | defaults do constructor, coordenadas, endereço |
+| `Entity/UserTest` | Unit | roles, UserInterface, eraseCredentials |
+| `Entity/ValidacaoEntidadesTest` | Integration | constraints NotBlank, Length, Positive, UniqueEntity |
+| `Service/RelatorioServiceTest` | Unit (mock) | agrupamento por autor/editora/assunto, ranking, erros |
+| `Service/LivrariaServiceTest` | Unit (mock) | save, updatedAt, exceção no flush |
+| `Service/PdfServiceTest` | Unit (mock) | geração de PDF, headers, dados passados ao Twig |
+| `Controller/SecurityControllerTest` | Functional | login, credenciais inválidas, redirect, logout |
+| `Controller/DashboardControllerTest` | Functional | autenticação, carregamento, contadores |
+| `Controller/LivroControllerTest` | Functional | auth, paginação, 404, CSRF |
+| `Controller/AutorControllerTest` | Functional | auth, inexistente, CSRF |
+| `Controller/RelatorioControllerTest` | Functional | todos os relatórios HTML + 3 PDFs |
+
+---
+
+## Dados Fake (Fixtures)
+
+O projeto usa [Zenstruck Foundry](https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html) com [FakerPHP](https://fakerphp.org/).
+
+```bash
+# Popula o banco com dados fake (apaga os dados existentes)
+php bin/console doctrine:fixtures:load
+
+# Adiciona sem apagar
+php bin/console doctrine:fixtures:load --append
+```
+
+Gera: **10 autores**, **5 editoras**, **8 assuntos** e **30 livros** com relacionamentos.
 
 ## Licença
 
