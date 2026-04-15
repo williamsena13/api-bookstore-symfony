@@ -1,0 +1,78 @@
+{% extends 'public/layout.html.twig' %}
+{% block title %}Relatório por Autor — {{ livraria.nome ?? 'Bookstore' }}{% endblock %}
+{% block nav_relatorios %}active{% endblock %}
+
+{% set totalLivros = 0 %}
+{% for n, livros in agrupado %}{% set totalLivros = totalLivros + livros|length %}{% endfor %}
+
+{% block content %}
+<div class="pub-page-hero">
+    <div class="container d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div>
+            <h1 class="pub-page-hero-title"><i class="pi pi-user"></i> Relatório por Autor</h1>
+            <p class="pub-page-hero-sub">{{ agrupado|length }} autores · {{ totalLivros }} livros</p>
+        </div>
+        <a href="{{ path('app_public_relatorios') }}" class="pub-back-link">
+            <i class="pi pi-arrow-left"></i> Relatórios
+        </a>
+    </div>
+</div>
+
+<div class="container py-4">
+    <div class="row g-3 mb-4">
+        <div class="col-md-6">
+            <div class="pub-stat">
+                <div class="pub-stat-icon" style="background:rgba(99,102,241,0.12);">
+                    <i class="pi pi-users" style="color:#6366f1;"></i>
+                </div>
+                <div>
+                    <div class="pub-stat-value">{{ agrupado|length }}</div>
+                    <div class="pub-stat-label">Autores</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="pub-stat">
+                <div class="pub-stat-icon" style="background:rgba(34,197,94,0.12);">
+                    <i class="pi pi-book" style="color:#22c55e;"></i>
+                </div>
+                <div>
+                    <div class="pub-stat-value">{{ totalLivros }}</div>
+                    <div class="pub-stat-label">Livros</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% for autorNome, livros in agrupado %}
+    <div class="pub-table-card mb-3">
+        <div class="pub-table-card-header" data-toggle>
+            <span><i class="pi pi-user" style="color:#6366f1;margin-right:.4rem;"></i>{{ autorNome }}</span>
+            <div style="display:flex;align-items:center;gap:.75rem;">
+                <span style="font-size:.78rem;color:#64748b;font-weight:400;">{{ livros|length }} livro{{ livros|length != 1 ? 's' : '' }}</span>
+                <i class="pi pi-chevron-down toggle-icon"></i>
+            </div>
+        </div>
+        <div class="pub-table-card-body">
+            <div class="dt-wrapper">
+                <table class="p-datatable w-full" data-order="0,asc">
+                    <thead><tr><th>Título</th><th>Editora</th><th>Ano</th><th>Assuntos</th></tr></thead>
+                    <tbody>
+                        {% for l in livros %}
+                        <tr>
+                            <td><strong>{{ l.livro_titulo }}</strong></td>
+                            <td>{{ l.editora ?? '—' }}</td>
+                            <td>{{ l.ano_publicacao ?? '—' }}</td>
+                            <td>{{ l.assuntos|default('—') }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block javascripts %}<script src="/js/datatable.js"></script>{% endblock %}
