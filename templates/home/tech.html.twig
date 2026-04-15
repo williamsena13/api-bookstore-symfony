@@ -1,0 +1,236 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tecnologias — {{ livraria.nome ?? 'Bookstore' }}{% endblock %}
+
+{% block stylesheets %}
+<link href="/css/landing.css" rel="stylesheet">
+<link href="/css/tech-icons.css" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+
+{# NAVBAR #}
+<nav class="landing-nav scrolled" id="landing-nav">
+    <div class="container d-flex justify-content-between align-items-center">
+        <a href="{{ path('app_home') }}" class="text-white text-decoration-none fw-bold fs-5">
+            <i class="bi bi-book-half"></i> {{ livraria.nome ?? 'Bookstore' }}
+        </a>
+        <div class="d-flex align-items-center gap-3">
+            <a href="{{ path('app_home') }}" class="btn-landing-outline py-2 px-3" style="font-size:.85rem;">
+                <i class="bi bi-arrow-left"></i> Voltar
+            </a>
+            <a href="{{ path('app_login') }}" class="btn-landing-primary py-2 px-3" style="font-size:.85rem;">
+                <i class="bi bi-box-arrow-in-right"></i> Acessar
+            </a>
+        </div>
+    </div>
+</nav>
+
+{# HERO TECH #}
+<section style="background:linear-gradient(135deg,#1a1a2e 0%,#0f172a 100%);padding:8rem 0 5rem;">
+    <div class="container text-center">
+        <div class="hero-badge"><i class="bi bi-cpu me-1"></i> Stack Técnica</div>
+        <h1 class="hero-title">Tecnologias utilizadas</h1>
+        <p class="hero-subtitle mx-auto text-center">
+            Projeto desenvolvido com as melhores práticas do ecossistema PHP/Symfony,
+            seguindo princípios de separação de responsabilidades e código limpo.
+        </p>
+    </div>
+</section>
+
+{# BACKEND #}
+<section class="features-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <div class="section-label">Backend</div>
+            <h2 class="section-title">Servidor e Framework</h2>
+        </div>
+        <div class="row g-4 justify-content-center">
+            <div class="col-md-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon mx-auto" style="background:rgba(119,123,180,0.12);display:flex;align-items:center;justify-content:center;">
+                        <img src="https://www.php.net/images/logos/php-logo.svg" alt="PHP" style="width:2.5rem;height:2.5rem;filter:brightness(0.6) saturate(1.2);">
+                    </div>
+                    <div class="feature-title">PHP 8.1+</div>
+                    <p class="feature-desc">Linguagem principal. Uso de PHP Attributes, Named Arguments, Enums e Fibers.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon mx-auto" style="background:rgba(16,185,129,0.12);display:flex;align-items:center;justify-content:center;">
+                        <img src="https://symfony.com/favicon.ico" alt="Symfony" style="width:2.5rem;height:2.5rem;">
+                    </div>
+                    <div class="feature-title">Symfony 6.4 LTS</div>
+                    <p class="feature-desc">Framework MVC com injeção de dependência, roteamento por atributos, eventos e segurança nativa.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon mx-auto" style="background:rgba(245,158,11,0.12);">
+                        <i class="bi bi-database" style="color:#f59e0b;font-size:2.5rem;"></i>
+                    </div>
+                    <div class="feature-title">Doctrine ORM 3.6</div>
+                    <p class="feature-desc">Mapeamento objeto-relacional com entidades, repositórios, migrations e relacionamentos.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon mx-auto" style="background:rgba(59,130,246,0.12);display:flex;align-items:center;justify-content:center;">
+                        <img src="https://www.mysql.com/common/logos/mysql-logo.svg" alt="MySQL" style="width:2.5rem;height:2.5rem;">
+                    </div>
+                    <div class="feature-title">MySQL 8.0</div>
+                    <p class="feature-desc">Banco de dados relacional com VIEWs SQL para relatórios, índices e constraints de integridade.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon mx-auto" style="background:rgba(139,92,246,0.12);">
+                        <i class="bi bi-file-earmark-pdf" style="color:#8b5cf6;font-size:2.5rem;"></i>
+                    </div>
+                    <div class="feature-title">DomPDF 3.x</div>
+                    <p class="feature-desc">Geração de relatórios em PDF a partir de templates HTML/CSS renderizados pelo Twig.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon mx-auto" style="background:rgba(20,184,166,0.12);">
+                        <i class="bi bi-shield-lock" style="color:#14b8a6;font-size:2.5rem;"></i>
+                    </div>
+                    <div class="feature-title">Symfony Security</div>
+                    <p class="feature-desc">Autenticação via form_login, hash de senha automático, controle de acesso por roles e proteção CSRF.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# FRONTEND #}
+<section class="tech-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <div class="section-label">Frontend</div>
+            <h2 class="section-title">Interface e Estilo</h2>
+        </div>
+        <div class="row g-4 justify-content-center">
+            <div class="col-md-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon mx-auto" style="background:rgba(99,102,241,0.12);display:flex;align-items:center;justify-content:center;">
+                        <img src="https://getbootstrap.com/docs/5.3/assets/brand/bootstrap-logo.svg" alt="Bootstrap" style="width:2.5rem;height:2.5rem;">
+                    </div>
+                    <div class="feature-title">Bootstrap 5.3</div>
+                    <p class="feature-desc">Framework CSS responsivo com grid, componentes, modais, alertas e utilitários.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon mx-auto" style="background:rgba(16,185,129,0.12);">
+                        <i class="bi bi-grid-1x2" style="color:#10b981;font-size:2.5rem;"></i>
+                    </div>
+                    <div class="feature-title">Bootstrap Icons</div>
+                    <p class="feature-desc">Biblioteca de ícones SVG com mais de 1.800 ícones usados em toda a interface.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon mx-auto" style="background:rgba(245,158,11,0.12);">
+                        <i class="bi bi-filetype-html" style="color:#f59e0b;font-size:2.5rem;"></i>
+                    </div>
+                    <div class="feature-title">Twig 3.x</div>
+                    <p class="feature-desc">Template engine com herança de layouts, blocos, filtros e extensões globais (AppExtension).</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon mx-auto" style="background:rgba(239,68,68,0.12);">
+                        <i class="bi bi-filetype-js" style="color:#ef4444;font-size:2.5rem;"></i>
+                    </div>
+                    <div class="feature-title">JavaScript Vanilla</div>
+                    <p class="feature-desc">JS puro sem dependências externas. Fetch API para AJAX, máscaras de input e integração ViaCEP.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon mx-auto" style="background:rgba(139,92,246,0.12);">
+                        <i class="bi bi-geo-alt" style="color:#8b5cf6;font-size:2.5rem;"></i>
+                    </div>
+                    <div class="feature-title">API ViaCEP</div>
+                    <p class="feature-desc">Integração com a API pública ViaCEP para preenchimento automático de endereço por CEP.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# ARQUITETURA #}
+<section class="features-section" style="padding-top:0;">
+    <div class="container">
+        <div class="text-center mb-5">
+            <div class="section-label">Arquitetura</div>
+            <h2 class="section-title">Padrões e Boas Práticas</h2>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="feature-card text-center">
+                    <div class="feature-icon mx-auto" style="background:rgba(99,102,241,0.12);">
+                        <i class="bi bi-layers" style="color:#6366f1;font-size:2.5rem;"></i>
+                    </div>
+                    <div class="feature-title">MVC</div>
+                    <p class="feature-desc">Separação clara entre Controller, Service, Repository e View.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="feature-card text-center">
+                    <div class="feature-icon mx-auto" style="background:rgba(16,185,129,0.12);">
+                        <i class="bi bi-recycle" style="color:#10b981;font-size:2.5rem;"></i>
+                    </div>
+                    <div class="feature-title">DRY</div>
+                    <p class="feature-desc">TimestampTrait elimina duplicação de código nas entidades.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="feature-card text-center">
+                    <div class="feature-icon mx-auto" style="background:rgba(245,158,11,0.12);">
+                        <i class="bi bi-diagram-3" style="color:#f59e0b;font-size:2.5rem;"></i>
+                    </div>
+                    <div class="feature-title">SRP</div>
+                    <p class="feature-desc">Services isolam lógica de negócio. Controllers apenas orquestram.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="feature-card text-center">
+                    <div class="feature-icon mx-auto" style="background:rgba(239,68,68,0.12);">
+                        <i class="bi bi-exclamation-triangle" style="color:#ef4444;font-size:2.5rem;"></i>
+                    </div>
+                    <div class="feature-title">Error Handling</div>
+                    <p class="feature-desc">Try/catch específicos para UniqueConstraint, ForeignKey e Throwable.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# CTA #}
+<section class="cta-section">
+    <div class="container">
+        <h2 class="cta-title">Quer ver o código?</h2>
+        <p class="cta-subtitle">Acesse o repositório no GitHub ou entre no sistema para explorar as funcionalidades.</p>
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+            <a href="https://github.com/williamsena13/api-bookstore-symfony" target="_blank" class="btn-landing-outline">
+                <i class="bi bi-github"></i> Ver no GitHub
+            </a>
+            <a href="{{ path('app_login') }}" class="btn-landing-primary">
+                <i class="bi bi-box-arrow-in-right"></i> Acessar o sistema
+            </a>
+        </div>
+    </div>
+</section>
+
+{# FOOTER #}
+<footer class="landing-footer">
+    <div class="container d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <span><i class="bi bi-book-half"></i> {{ livraria.nome ?? 'Bookstore' }} — Sistema de Gerenciamento de Livros</span>
+        <span>Desenvolvido por <strong class="text-light">William B. Sena</strong> · Symfony 6.4</span>
+    </div>
+</footer>
+
+{% endblock %}

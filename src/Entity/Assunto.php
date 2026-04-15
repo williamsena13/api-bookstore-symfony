@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\AssuntoRepository;
+use App\Trait\TimestampTrait;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -11,6 +12,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[UniqueEntity(fields: ['descricao'], message: 'Já existe um assunto com esta descrição.')]
 class Assunto
 {
+    use TimestampTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -21,27 +24,15 @@ class Assunto
     #[Assert\Length(max: 255, maxMessage: 'A descrição deve ter no máximo {{ limit }} caracteres.')]
     private ?string $descricao = null;
 
-    #[ORM\Column(type: 'datetime_immutable')]
-    private ?\DateTimeImmutable $createdAt = null;
-
-    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
-    private ?\DateTimeImmutable $updatedAt = null;
-
     public function __construct()
     {
-        $this->createdAt = new \DateTimeImmutable();
+        $this->initTimestamps();
     }
 
     public function getId(): ?int { return $this->id; }
 
     public function getDescricao(): ?string { return $this->descricao; }
     public function setDescricao(string $descricao): static { $this->descricao = $descricao; return $this; }
-
-    public function getCreatedAt(): ?\DateTimeImmutable { return $this->createdAt; }
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static { $this->createdAt = $createdAt; return $this; }
-
-    public function getUpdatedAt(): ?\DateTimeImmutable { return $this->updatedAt; }
-    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static { $this->updatedAt = $updatedAt; return $this; }
 
     public function __toString(): string { return $this->descricao ?? ''; }
 }

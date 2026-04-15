@@ -1,30 +1,64 @@
 {% extends 'base.html.twig' %}
-
-{% block title %}Login — Bookstore{% endblock %}
+{% block title %}Login — {{ livraria.nome ?? 'Bookstore' }}{% endblock %}
 
 {% block body %}
-<div class="d-flex justify-content-center align-items-center" style="min-height: 100vh;">
-    <div class="card shadow" style="width: 400px;">
-        <div class="card-body p-4">
-            <h4 class="card-title text-center mb-4"><i class="bi bi-book"></i> Bookstore</h4>
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--sidebar-bg);">
+
+    <div style="width:100%;max-width:420px;padding:1.5rem;">
+
+        {# Logo / Brand #}
+        <div style="text-align:center;margin-bottom:2rem;">
+            {% if livraria.logoNavbar %}
+                <img src="{{ livraria.logoNavbar }}" alt="{{ livraria.nome }}" style="height:52px;object-fit:contain;margin-bottom:1rem;">
+            {% else %}
+                <div style="width:56px;height:56px;background:var(--primary);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
+                    <i class="pi pi-book" style="font-size:1.6rem;color:#fff;"></i>
+                </div>
+            {% endif %}
+            <h1 style="color:#fff;font-size:1.4rem;font-weight:700;margin:0;">{{ livraria.nome ?? 'Bookstore' }}</h1>
+            <p style="color:rgba(255,255,255,0.45);font-size:.85rem;margin:.25rem 0 0;">{{ livraria.descricao ?? 'Sistema de Gerenciamento de Livros' }}</p>
+        </div>
+
+        {# Card #}
+        <div style="background:var(--card-bg);border-radius:16px;padding:2rem;box-shadow:0 20px 60px rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);">
+
+            <h2 style="font-size:1rem;font-weight:600;color:var(--text-primary);margin:0 0 1.5rem;">Acesse sua conta</h2>
 
             {% if error %}
-                <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                <div class="p-alert p-alert-danger" style="margin-bottom:1.25rem;">
+                    <i class="pi pi-times-circle"></i>
+                    {{ error.messageKey|trans(error.messageData, 'security') }}
+                </div>
             {% endif %}
 
             <form method="post">
-                <div class="mb-3">
-                    <label for="username" class="form-label">E-mail</label>
-                    <input type="email" id="username" name="_username" value="{{ last_username }}" class="form-control" required autofocus>
+                <div style="margin-bottom:1rem;">
+                    <label for="username">E-mail</label>
+                    <input type="email" id="username" name="_username" class="form-control" placeholder="seu@email.com" required autofocus>
                 </div>
-                <div class="mb-3">
-                    <label for="password" class="form-label">Senha</label>
-                    <input type="password" id="password" name="_password" class="form-control" required>
+                <div style="margin-bottom:1.5rem;">
+                    <label for="password">Senha</label>
+                    <input type="password" id="password" name="_password" class="form-control" placeholder="••••••••" required>
                 </div>
                 <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-                <button type="submit" class="btn btn-primary w-100">Entrar</button>
+                <button type="submit" class="p-btn p-btn-primary" style="width:100%;justify-content:center;padding:.65rem;">
+                    <i class="pi pi-sign-in"></i> Entrar
+                </button>
             </form>
+
+            <a href="{{ path('app_home') }}" style="display:flex;align-items:center;justify-content:center;gap:.4rem;margin-top:1rem;font-size:.82rem;color:var(--text-secondary);text-decoration:none;" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='var(--text-secondary)'">
+                <i class="pi pi-arrow-left"></i> Voltar para o site
+            </a>
         </div>
+
+        {% if livraria.telefone or livraria.email %}
+        <div style="text-align:center;margin-top:1.25rem;font-size:.78rem;color:rgba(255,255,255,0.3);">
+            {% if livraria.telefone %}<i class="pi pi-phone"></i> {{ livraria.telefone }}{% endif %}
+            {% if livraria.telefone and livraria.email %} &nbsp;·&nbsp; {% endif %}
+            {% if livraria.email %}<i class="pi pi-envelope"></i> {{ livraria.email }}{% endif %}
+        </div>
+        {% endif %}
+
     </div>
 </div>
 {% endblock %}

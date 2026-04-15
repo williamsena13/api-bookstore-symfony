@@ -1,0 +1,186 @@
+{% extends 'admin/layout.html.twig' %}
+{% block title %}Importar Livros{% endblock %}
+{% block page_title %}Importar Livros{% endblock %}
+{% block breadcrumb %}<i class="pi pi-angle-right"></i> Importar{% endblock %}
+
+{% block content %}
+<div class="row g-3">
+
+    {# FORMULÁRIO COMPACTO #}
+    <div class="col-12 col-lg-3">
+        <div class="p-card">
+            <div class="p-card-header">
+                <h3 class="p-card-title"><i class="pi pi-cloud-download"></i> Open Library</h3>
+                <div style="display:flex;align-items:center;gap:.5rem;">
+                    <label class="d-flex align-items-center gap-1" style="cursor:pointer;font-size:.78rem;font-weight:500;color:var(--text-secondary);margin:0;">
+                        <input type="checkbox" id="importDryRun" class="form-check-input" style="margin:0;width:14px;height:14px;flex-shrink:0;">
+                        Dry-run
+                    </label>
+                    <a href="{{ path('app_import_historico') }}" class="topbar-icon-btn" title="Histórico de importações">
+                        <i class="pi pi-history"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="p-card-body" style="padding:1rem;">
+
+                <div class="row g-2 mb-2">
+                    <div class="col-6">
+                        <label>Tipo</label>
+                        <select id="importTipo" class="form-select form-select-sm" data-no-ts="1">
+                            <option value="aleatorio">Aleatório</option>
+                            <option value="geral">Geral</option>
+                            <option value="titulo">Título</option>
+                            <option value="autor">Autor</option>
+                            <option value="assunto">Assunto</option>
+                            <option value="isbn">ISBN</option>
+                        </select>
+                    </div>
+                    <div class="col-4">
+                        <label>Idioma</label>
+                        <select id="importIdioma" class="form-select form-select-sm" data-no-ts="1">
+                            <option value="">Todos</option>
+                            <option value="por">Português</option>
+                            <option value="eng">Inglês</option>
+                            <option value="spa">Espanhol</option>
+                        </select>
+                    </div>
+                    <div class="col-2">
+                        <label>Qtd</label>
+                        <input type="number" id="importLimite" class="form-control form-control-sm" value="10" min="1" max="50">
+                    </div>
+                </div>
+
+                <div class="mb-2" id="buscaField" style="display:none;">
+                    <label>Busca</label>
+                    <input type="text" id="importBusca" class="form-control form-control-sm" placeholder="Ex: machado de assis">
+                </div>
+
+                <button type="button" id="btnImportar" class="p-btn p-btn-primary" style="width:100%;justify-content:center;margin-top:.25rem;">
+                    <i class="pi pi-cloud-download"></i> Importar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    {# TERMINAL #}
+    <div class="col-12 col-lg-9">
+
+        <div id="importStatsRow" class="row g-2 mb-2" style="display:none;">
+            <div class="col-4">
+                <div class="p-card" style="padding:.6rem .875rem;display:flex;align-items:center;gap:.625rem;">
+                    <i class="pi pi-check-circle" style="color:var(--success);font-size:1.1rem;"></i>
+                    <div>
+                        <div id="statImportados" style="font-size:1.25rem;font-weight:700;line-height:1;">0</div>
+                        <div style="font-size:.7rem;color:var(--text-secondary);">Importados</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="p-card" style="padding:.6rem .875rem;display:flex;align-items:center;gap:.625rem;">
+                    <i class="pi pi-minus-circle" style="color:var(--warning);font-size:1.1rem;"></i>
+                    <div>
+                        <div id="statIgnorados" style="font-size:1.25rem;font-weight:700;line-height:1;">0</div>
+                        <div style="font-size:.7rem;color:var(--text-secondary);">Ignorados</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="p-card" style="padding:.6rem .875rem;display:flex;align-items:center;gap:.625rem;">
+                    <i class="pi pi-times-circle" style="color:var(--danger);font-size:1.1rem;"></i>
+                    <div>
+                        <div id="statErros" style="font-size:1.25rem;font-weight:700;line-height:1;">0</div>
+                        <div style="font-size:.7rem;color:var(--text-secondary);">Erros</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-card">
+            <div class="p-card-header">
+                <h3 class="p-card-title"><i class="pi pi-terminal"></i> Output</h3>
+                <span id="importDuracao" style="font-size:.78rem;color:var(--text-secondary);"></span>
+            </div>
+            <div class="p-card-body" style="padding:0;">
+                <pre id="importOutput" style="background:#0f172a;color:#94a3b8;padding:1.25rem;margin:0;border-radius:0 0 var(--card-radius) var(--card-radius);min-height:460px;max-height:600px;overflow-y:auto;font-size:.78rem;line-height:1.7;white-space:pre-wrap;font-family:'Cascadia Code','Fira Code','Consolas',monospace;">$ aguardando...
+
+  Selecione o tipo e clique em "Importar".
+
+  Tipos:
+    aleatorio  — livros de assuntos variados
+    geral      — busca em todos os campos
+    titulo     — busca por título
+    autor      — busca por autor
+    assunto    — busca por categoria
+    isbn       — busca por ISBN</pre>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var tipoEl    = document.getElementById('importTipo');
+    var buscaWrap = document.getElementById('buscaField');
+    var btnEl     = document.getElementById('btnImportar');
+    var outputEl  = document.getElementById('importOutput');
+    var statsRow  = document.getElementById('importStatsRow');
+    var duracaoEl = document.getElementById('importDuracao');
+
+    tipoEl.addEventListener('change', function () {
+        buscaWrap.style.display = this.value === 'aleatorio' ? 'none' : 'block';
+    });
+
+    btnEl.addEventListener('click', function () {
+        btnEl.disabled = true;
+        btnEl.innerHTML = '<i class="pi pi-spin pi-spinner"></i> Importando...';
+        outputEl.style.color = '#e2e8f0';
+        outputEl.textContent = '$ executando app:import-livros...\n';
+        statsRow.style.display = 'none';
+        duracaoEl.textContent = '';
+
+        var fd = new FormData();
+        fd.append('tipo',    tipoEl.value);
+        fd.append('busca',   document.getElementById('importBusca').value);
+        fd.append('limite',  document.getElementById('importLimite').value);
+        fd.append('idioma',  document.getElementById('importIdioma').value);
+        fd.append('dry_run', document.getElementById('importDryRun').checked ? '1' : '0');
+
+        fetch('{{ path("app_import_run") }}', { method: 'POST', body: fd })
+            .then(function (r) {
+                var ct = r.headers.get('content-type') || '';
+                if (!ct.includes('application/json')) {
+                    return r.text().then(function (html) {
+                        var m = html.match(/<title>(.*?)<\/title>/i);
+                        throw new Error(m ? m[1] : 'Resposta não-JSON do servidor. Verifique os logs.');
+                    });
+                }
+                return r.json();
+            })
+            .then(function (data) {
+                outputEl.textContent = data.output || '(sem output)';
+                outputEl.scrollTop = outputEl.scrollHeight;
+                outputEl.style.color = data.success ? '#86efac' : '#fca5a5';
+
+                if (data.stats) {
+                    statsRow.style.display = 'flex';
+                    document.getElementById('statImportados').textContent = data.stats.importados;
+                    document.getElementById('statIgnorados').textContent  = data.stats.ignorados;
+                    document.getElementById('statErros').textContent      = data.stats.erros;
+                    duracaoEl.textContent = data.stats.duration + 's';
+                }
+            })
+            .catch(function (err) {
+                outputEl.textContent = '$ ERRO: ' + err.message;
+                outputEl.style.color = '#fca5a5';
+            })
+            .finally(function () {
+                btnEl.disabled = false;
+                btnEl.innerHTML = '<i class="pi pi-cloud-download"></i> Importar';
+            });
+    });
+});
+</script>
+{% endblock %}

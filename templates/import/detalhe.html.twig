@@ -1,0 +1,63 @@
+{% extends 'admin/layout.html.twig' %}
+{% block title %}Importação #{{ log.id }} — {{ livraria.nome ?? 'Bookstore' }}{% endblock %}
+{% block page_title %}Importação #{{ log.id }}{% endblock %}
+{% block breadcrumb %}<i class="pi pi-angle-right"></i> <a href="{{ path('app_import_index') }}">Importar</a> <i class="pi pi-angle-right"></i> <a href="{{ path('app_import_historico') }}">Histórico</a> <i class="pi pi-angle-right"></i> #{{ log.id }}{% endblock %}
+
+{% block content %}
+<div class="row g-3">
+    <div class="col-12 col-lg-4">
+        <div class="p-card">
+            <div class="p-card-header"><h3 class="p-card-title"><i class="pi pi-info-circle"></i> Detalhes</h3></div>
+            <div class="p-card-body">
+                <table style="width:100%;font-size:.875rem;">
+                    <tr><td style="color:var(--text-secondary);padding:.4rem 0;">Tipo</td><td><span class="p-badge p-badge-primary">{{ log.tipo }}</span></td></tr>
+                    <tr><td style="color:var(--text-secondary);padding:.4rem 0;">Busca</td><td>{{ log.busca ?? '—' }}</td></tr>
+                    <tr><td style="color:var(--text-secondary);padding:.4rem 0;">Limite</td><td>{{ log.limite }}</td></tr>
+                    <tr><td style="color:var(--text-secondary);padding:.4rem 0;">Idioma</td><td>{{ log.idioma ?? 'Todos' }}</td></tr>
+                    <tr><td style="color:var(--text-secondary);padding:.4rem 0;">Dry-run</td><td>{{ log.dryRun ? 'Sim' : 'Não' }}</td></tr>
+                    <tr><td style="color:var(--text-secondary);padding:.4rem 0;">Usuário</td><td>{{ log.usuario ?? '—' }}</td></tr>
+                    <tr><td style="color:var(--text-secondary);padding:.4rem 0;">Data</td><td>{{ log.createdAt|date('d/m/Y H:i:s') }}</td></tr>
+                    <tr><td style="color:var(--text-secondary);padding:.4rem 0;">Duração</td><td>{{ log.duracaoSegundos }}s</td></tr>
+                    <tr><td style="color:var(--text-secondary);padding:.4rem 0;">Exit code</td><td>{{ log.exitCode }}</td></tr>
+                    <tr><td style="color:var(--text-secondary);padding:.4rem 0;">Status</td><td>
+                        {% if log.dryRun %}<span class="p-badge p-badge-secondary">Simulação</span>
+                        {% elseif log.sucesso %}<span class="p-badge p-badge-success">Sucesso</span>
+                        {% else %}<span class="p-badge p-badge-danger">Falha</span>{% endif %}
+                    </td></tr>
+                </table>
+
+                <hr style="border-color:var(--border);margin:1rem 0;">
+
+                <div class="grid" style="text-align:center;">
+                    <div class="col-4">
+                        <div style="font-size:1.5rem;font-weight:700;color:var(--success);">{{ log.importados }}</div>
+                        <div style="font-size:.75rem;color:var(--text-secondary);">Importados</div>
+                    </div>
+                    <div class="col-4">
+                        <div style="font-size:1.5rem;font-weight:700;color:var(--warning);">{{ log.ignorados }}</div>
+                        <div style="font-size:.75rem;color:var(--text-secondary);">Ignorados</div>
+                    </div>
+                    <div class="col-4">
+                        <div style="font-size:1.5rem;font-weight:700;color:var(--danger);">{{ log.erros }}</div>
+                        <div style="font-size:.75rem;color:var(--text-secondary);">Erros</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-8">
+        <div class="p-card">
+            <div class="p-card-header"><h3 class="p-card-title"><i class="pi pi-terminal"></i> Output do comando</h3></div>
+            <div class="p-card-body" style="padding:0;">
+                <pre style="background:#0f172a;color:#e2e8f0;padding:1.25rem;margin:0;border-radius:0 0 12px 12px;max-height:600px;overflow-y:auto;font-size:.82rem;line-height:1.6;white-space:pre-wrap;">{{ log.output ?? 'Sem output.' }}</pre>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="flex justify-content-end mt-3 gap-2">
+    <a href="{{ path('app_import_historico') }}" class="p-btn p-btn-secondary p-btn-sm"><i class="pi pi-arrow-left"></i> Voltar</a>
+    <a href="{{ path('app_import_index') }}" class="p-btn p-btn-primary p-btn-sm"><i class="pi pi-cloud-download"></i> Nova importação</a>
+</div>
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Usuários — {{ livraria.nome ?? 'Bookstore' }}{% endblock %}
+{% block page_title %}Usuários{% endblock %}
+{% block breadcrumb %}<i class="pi pi-angle-right"></i> Usuários{% endblock %}
+
+{% block content %}
+<div class="p-card">
+    <div class="p-card-header">
+        <h2 class="p-card-title"><i class="pi pi-users"></i> Usuários</h2>
+        <div class="d-flex align-items-center gap-2">
+            <div class="dt-header-search" data-dt-search-for="tabelaUsuarios">
+                <i class="pi pi-search" style="color:var(--text-secondary);font-size:.85rem;"></i>
+                <input type="text" placeholder="Pesquisar..." style="border:none;outline:none;background:none;font-size:.85rem;color:var(--text-primary);width:160px;">
+            </div>
+            <button class="p-btn p-btn-success p-btn-sm btn-modal" data-url="{{ path('app_user_new') }}" data-title="Novo Usuário">
+                <i class="pi pi-plus"></i> Novo Usuário
+            </button>
+        </div>
+    </div>
+    <div class="p-card-body">
+        <div class="dt-wrapper">
+            <table class="p-datatable w-full" id="tabelaUsuarios" data-order="0,desc">
+                <thead>
+                    <tr><th>#</th><th>Nome</th><th>E-mail</th><th>Perfil</th><th>Ações</th></tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ user.id }}</td>
+                        <td><strong>{{ user.nome ?? '—' }}</strong></td>
+                        <td>{{ user.email }}</td>
+                        <td>
+                            {% for role in user.roles %}
+                                <span class="p-badge {{ role == 'ROLE_ADMIN' ? 'p-badge-primary' : 'p-badge-secondary' }}">
+                                    {{ role == 'ROLE_ADMIN' ? 'Admin' : 'Usuário' }}
+                                </span>
+                            {% endfor %}
+                        </td>
+                        <td>
+                            <div class="flex gap-2">
+                                <button class="p-btn p-btn-warning p-btn-sm btn-modal" data-url="{{ path('app_user_edit', {id: user.id}) }}" data-title="Editar Usuário">
+                                    <i class="pi pi-pencil"></i>
+                                </button>
+                                {% if user != app.user %}
+                                <form method="post" action="{{ path('app_user_delete', {id: user.id}) }}" class="d-inline">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+                                    <button type="button" class="p-btn p-btn-danger p-btn-sm btn-delete" data-label='"{{ user.nome ?? user.email }}"'>
+                                        <i class="pi pi-trash"></i>
+                                    </button>
+                                </form>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="5" class="text-center" style="color:var(--text-secondary);padding:2rem;">Nenhum usuário cadastrado.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% include 'admin/_modals.html.twig' with { modal_size: 'modal-lg' } %}
+{% endblock %}
+
+{% block javascripts %}
+<script src="/js/datatable.js"></script>
+<script src="/js/modal-crud.js"></script>
+{% endblock %}

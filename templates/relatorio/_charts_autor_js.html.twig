@@ -1,0 +1,18 @@
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var palette = ['#6366f1','#22c55e','#f59e0b','#ef4444','#06b6d4','#a855f7','#f97316','#14b8a6','#ec4899','#84cc16'];
+    var labels = {{ agrupado|keys|json_encode|raw }};
+    var totais = [{% for n, livros in agrupado %}{{ livros|length }},{% endfor %}];
+
+    new Chart(document.getElementById('chartAutorBar'), {
+        type: 'bar',
+        data: { labels, datasets: [{ label: 'Livros', data: totais, backgroundColor: palette.map(c => c + '33'), borderColor: palette, borderWidth: 2, borderRadius: 6 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false }, ticks: { color: '#64748b' } } } }
+    });
+    new Chart(document.getElementById('chartAutorPie'), {
+        type: 'doughnut',
+        data: { labels, datasets: [{ data: totais, backgroundColor: palette, borderWidth: 0, hoverOffset: 8 }] },
+        options: { responsive: true, maintainAspectRatio: false, cutout: '55%', plugins: { legend: { position: 'bottom', labels: { padding: 10, boxWidth: 12, font: { size: 11 }, color: '#94a3b8' } } } }
+    });
+});
+</script>

@@ -1,0 +1,76 @@
+{% extends 'public/layout.html.twig' %}
+{% block title %}Assuntos — {{ livraria.nome ?? 'Bookstore' }}{% endblock %}
+{% block nav_assuntos %}active{% endblock %}
+
+{% block content %}
+<div class="pub-page-hero">
+    <div class="container">
+        <h1 class="pub-page-hero-title"><i class="pi pi-tag"></i> Assuntos</h1>
+        <p class="pub-page-hero-sub">{{ assuntos|length }} categorias cadastradas — clique para filtrar</p>
+    </div>
+</div>
+
+<div class="container py-4">
+
+    {# CHIPS DE FILTRO #}
+    <div class="d-flex flex-wrap gap-2 mb-4" id="assuntoFilters">
+        <button class="lp-cat-chip active" data-filter="all">
+            <i class="pi pi-list"></i> Todos
+        </button>
+        {% for s in assuntos %}
+        <button class="lp-cat-chip" data-filter="{{ s.id }}">
+            <i class="pi pi-bookmark"></i>
+            <span>{{ s.descricao }}</span>
+            <span class="lp-cat-chip-count">{{ s.total_livros }}</span>
+        </button>
+        {% endfor %}
+    </div>
+
+    {# GRID DE CARDS #}
+    <div class="row g-3" id="assuntoGrid" data-card-grid data-page-size="12">
+        {% for s in assuntos %}
+        <div class="col-xl-3 col-lg-4 col-md-6" data-assunto-id="{{ s.id }}">
+            <div class="pub-grid-card">
+                <div class="pub-grid-card-cover" style="background:linear-gradient(135deg,#7f1d1d,#b91c1c);">
+                    <div class="pub-grid-card-icon"><i class="pi pi-tag"></i></div>
+                    <p class="pub-grid-card-title">{{ s.descricao }}</p>
+                </div>
+                <div class="pub-grid-card-body">
+                    <div class="pub-grid-card-count">
+                        <i class="pi pi-book"></i>
+                        {{ s.total_livros }} livro{{ s.total_livros != 1 ? 's' : '' }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12 text-center py-5" style="color:#64748b;">
+            <i class="pi pi-inbox" style="font-size:2.5rem;display:block;margin-bottom:.75rem;"></i>
+            Nenhum assunto cadastrado.
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var chips = document.querySelectorAll('.lp-cat-chip');
+    var cards = document.querySelectorAll('#assuntoGrid [data-assunto-id]');
+
+    chips.forEach(function (chip) {
+        chip.addEventListener('click', function () {
+            chips.forEach(function (c) { c.classList.remove('active'); });
+            this.classList.add('active');
+
+            var filter = this.getAttribute('data-filter');
+            cards.forEach(function (card) {
+                card.style.display = (filter === 'all' || card.getAttribute('data-assunto-id') === filter) ? '' : 'none';
+            });
+        });
+    });
+});
+</script>
+{% endblock %}

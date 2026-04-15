@@ -1,0 +1,29 @@
+{% if paginacao.totalPages > 1 %}
+<div class="p-card-footer">
+    <span style="font-size:.82rem;color:var(--text-secondary);">
+        {{ ((paginacao.page - 1) * paginacao.perPage) + 1 }}–{{ min(paginacao.page * paginacao.perPage, paginacao.total) }} de {{ paginacao.total }} registros
+    </span>
+    <nav style="display:flex;align-items:center;gap:4px;">
+        {% if paginacao.page > 1 %}
+            <a href="?page=1" class="p-btn p-btn-secondary p-btn-sm" title="Primeira"><i class="pi pi-angle-double-left"></i></a>
+            <a href="?page={{ paginacao.page - 1 }}" class="p-btn p-btn-secondary p-btn-sm"><i class="pi pi-angle-left"></i></a>
+        {% endif %}
+
+        {% set start = max(1, paginacao.page - 2) %}
+        {% set end   = min(paginacao.totalPages, paginacao.page + 2) %}
+
+        {% for p in start..end %}
+            {% if p == paginacao.page %}
+                <span class="p-btn p-btn-primary p-btn-sm" style="cursor:default;">{{ p }}</span>
+            {% else %}
+                <a href="?page={{ p }}" class="p-btn p-btn-secondary p-btn-sm">{{ p }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if paginacao.page < paginacao.totalPages %}
+            <a href="?page={{ paginacao.page + 1 }}" class="p-btn p-btn-secondary p-btn-sm"><i class="pi pi-angle-right"></i></a>
+            <a href="?page={{ paginacao.totalPages }}" class="p-btn p-btn-secondary p-btn-sm" title="Última"><i class="pi pi-angle-double-right"></i></a>
+        {% endif %}
+    </nav>
+</div>
+{% endif %}

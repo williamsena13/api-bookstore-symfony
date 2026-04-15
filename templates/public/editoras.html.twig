@@ -1,0 +1,38 @@
+{% extends 'public/layout.html.twig' %}
+{% block title %}Editoras — {{ livraria.nome ?? 'Bookstore' }}{% endblock %}
+{% block nav_editoras %}active{% endblock %}
+
+{% block content %}
+<div class="pub-page-hero">
+    <div class="container">
+        <h1 class="pub-page-hero-title"><i class="pi pi-building"></i> Editoras</h1>
+        <p class="pub-page-hero-sub">{{ editoras|length }} editoras cadastradas</p>
+    </div>
+</div>
+
+<div class="container py-4">
+    <div class="row g-3" data-card-grid data-page-size="12">
+        {% for e in editoras %}
+        <div class="col-xl-3 col-lg-4 col-md-6">
+            <div class="pub-grid-card">
+                <div class="pub-grid-card-cover" style="background:linear-gradient(135deg,#4c1d95,#6d28d9);">
+                    <div class="pub-grid-card-icon"><i class="pi pi-building"></i></div>
+                    <p class="pub-grid-card-title">{{ e.nome }}</p>
+                </div>
+                <div class="pub-grid-card-body">
+                    <div class="pub-grid-card-count">
+                        <i class="pi pi-book"></i>
+                        {{ e.total_livros }} livro{{ e.total_livros != 1 ? 's' : '' }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12 text-center py-5" style="color:#64748b;">
+            <i class="pi pi-inbox" style="font-size:2.5rem;display:block;margin-bottom:.75rem;"></i>
+            Nenhuma editora cadastrada.
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

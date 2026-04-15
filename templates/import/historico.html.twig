@@ -1,0 +1,186 @@
+{% extends 'admin/layout.html.twig' %}
+{% block title %}Histórico de Importações — {{ livraria.nome ?? 'Bookstore' }}{% endblock %}
+{% block page_title %}Histórico de Importações{% endblock %}
+{% block breadcrumb %}<i class="pi pi-angle-right"></i> <a href="{{ path('app_import_index') }}">Importar</a> <i class="pi pi-angle-right"></i> Histórico{% endblock %}
+
+{% block content %}
+
+{# STAT CARDS #}
+{% if stats.total_execucoes is defined and stats.total_execucoes > 0 %}
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#eef2ff;"><i class="pi pi-cloud-download" style="color:var(--primary);font-size:1.4rem;"></i></div>
+            <div><div class="stat-value">{{ stats.total_execucoes }}</div><div class="stat-label">Execuções</div></div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#dcfce7;"><i class="pi pi-check-circle" style="color:var(--success);font-size:1.4rem;"></i></div>
+            <div><div class="stat-value">{{ stats.total_importados }}</div><div class="stat-label">Importados</div></div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#fef3c7;"><i class="pi pi-minus-circle" style="color:var(--warning);font-size:1.4rem;"></i></div>
+            <div><div class="stat-value">{{ stats.total_ignorados }}</div><div class="stat-label">Ignorados</div></div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#fee2e2;"><i class="pi pi-times-circle" style="color:var(--danger);font-size:1.4rem;"></i></div>
+            <div><div class="stat-value">{{ stats.total_erros }}</div><div class="stat-label">Erros</div></div>
+        </div>
+    </div>
+</div>
+
+{# GRÁFICOS #}
+<div class="row g-3 mb-4">
+    <div class="col-12 col-lg-5">
+        <div class="chart-card">
+            <div class="chart-card-title"><i class="pi pi-chart-pie" style="color:var(--primary);"></i> Resultado das Importações</div>
+            <div class="chart-card-subtitle">Proporção de importados, ignorados e erros</div>
+            <div class="chart-container" style="height:260px;"><canvas id="chartResultado"></canvas></div>
+        </div>
+    </div>
+    <div class="col-12 col-lg-7">
+        <div class="chart-card">
+            <div class="chart-card-title"><i class="pi pi-chart-bar" style="color:var(--success);"></i> Importações por Tipo</div>
+            <div class="chart-card-subtitle">Quantidade de livros importados por tipo de busca</div>
+            <div class="chart-container" style="height:260px;"><canvas id="chartTipo"></canvas></div>
+        </div>
+    </div>
+</div>
+
+{% if stats.ultima_execucao %}
+<div class="row g-3 mb-4">
+    <div class="col-12">
+        <div class="p-card">
+            <div class="p-card-body" style="padding:.875rem 1.25rem;">
+                <div class="d-flex flex-wrap gap-4" style="font-size:.85rem;color:var(--text-secondary);">
+                    <span><i class="pi pi-clock"></i> Última execução: <strong>{{ stats.ultima_execucao|date('d/m/Y H:i') }}</strong></span>
+                    <span><i class="pi pi-stopwatch"></i> Duração média: <strong>{{ stats.media_duracao }}s</strong></span>
+                    <span><i class="pi pi-check"></i> Sucesso: <strong>{{ stats.execucoes_sucesso }}</strong></span>
+                    <span><i class="pi pi-times"></i> Falha: <strong>{{ stats.execucoes_falha }}</strong></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endif %}
+
+{# TABELA #}
+<div class="p-card">
+    <div class="p-card-header">
+        <h3 class="p-card-title"><i class="pi pi-history"></i> Histórico</h3>
+        <a href="{{ path('app_import_index') }}" class="p-btn p-btn-primary p-btn-sm"><i class="pi pi-cloud-download"></i> Nova importação</a>
+    </div>
+    <div class="p-card-body" style="padding:0;">
+        <div class="dt-wrapper">
+            <table class="p-datatable w-full" data-order="7,desc">
+                <thead>
+                    <tr>
+                        <th data-priority="1">#</th>
+                        <th data-priority="1">Tipo</th>
+                        <th data-priority="2">Busca</th>
+                        <th data-priority="1">Import.</th>
+                        <th data-priority="3">Ignor.</th>
+                        <th data-priority="3">Erros</th>
+                        <th data-priority="4">Duração</th>
+                        <th data-priority="1">Data</th>
+                        <th data-priority="2">Status</th>
+                        <th data-priority="1">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td>{{ log.id }}</td>
+                        <td><span class="p-badge p-badge-primary">{{ log.tipo }}</span></td>
+                        <td>{{ log.busca ?? '—' }}</td>
+                        <td><strong style="color:var(--success);">{{ log.importados }}</strong></td>
+                        <td>{{ log.ignorados }}</td>
+                        <td>{% if log.erros > 0 %}<strong style="color:var(--danger);">{{ log.erros }}</strong>{% else %}0{% endif %}</td>
+                        <td>{{ log.duracaoSegundos }}s</td>
+                        <td>{{ log.createdAt|date('d/m/Y H:i') }}</td>
+                        <td>
+                            {% if log.dryRun %}<span class="p-badge p-badge-secondary">Simulação</span>
+                            {% elseif log.sucesso %}<span class="p-badge p-badge-success">Sucesso</span>
+                            {% else %}<span class="p-badge p-badge-danger">Falha</span>{% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ path('app_import_detalhe', {id: log.id}) }}" class="p-btn p-btn-info p-btn-sm"><i class="pi pi-eye"></i></a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="10" style="text-align:center;padding:2rem;color:var(--text-secondary);">Nenhuma importação realizada.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script src="/js/datatable.js"></script>
+{% if stats.total_execucoes is defined and stats.total_execucoes > 0 %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var palette = ['#22c55e', '#f59e0b', '#ef4444'];
+
+    // Doughnut — resultado geral
+    new Chart(document.getElementById('chartResultado'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Importados', 'Ignorados', 'Erros'],
+            datasets: [{
+                data: [{{ stats.total_importados }}, {{ stats.total_ignorados }}, {{ stats.total_erros }}],
+                backgroundColor: palette,
+                borderWidth: 0,
+                hoverOffset: 8,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '55%',
+            plugins: {
+                legend: { position: 'bottom', labels: { padding: 12, boxWidth: 12, font: { size: 11 } } }
+            }
+        }
+    });
+
+    // Bar — por tipo
+    var tipoLabels = {{ statsByTipo|map(r => r.tipo)|json_encode|raw }};
+    var tipoImportados = {{ statsByTipo|map(r => r.importados)|json_encode|raw }};
+    var tipoIgnorados = {{ statsByTipo|map(r => r.ignorados)|json_encode|raw }};
+    var tipoErros = {{ statsByTipo|map(r => r.erros)|json_encode|raw }};
+
+    new Chart(document.getElementById('chartTipo'), {
+        type: 'bar',
+        data: {
+            labels: tipoLabels,
+            datasets: [
+                { label: 'Importados', data: tipoImportados, backgroundColor: '#22c55e33', borderColor: '#22c55e', borderWidth: 2, borderRadius: 6 },
+                { label: 'Ignorados', data: tipoIgnorados, backgroundColor: '#f59e0b33', borderColor: '#f59e0b', borderWidth: 2, borderRadius: 6 },
+                { label: 'Erros', data: tipoErros, backgroundColor: '#ef444433', borderColor: '#ef4444', borderWidth: 2, borderRadius: 6 },
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { padding: 12, boxWidth: 12, font: { size: 11 } } }
+            },
+            scales: {
+                y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: 'rgba(0,0,0,0.05)' } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+});
+</script>
+{% endif %}
+{% endblock %}

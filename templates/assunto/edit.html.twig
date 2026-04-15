@@ -1,0 +1,94 @@
+{% extends 'admin/layout.html.twig' %}
+{% block title %}Editar Assunto — {{ assunto.descricao }}{% endblock %}
+{% block page_title %}Editar Assunto{% endblock %}
+{% block breadcrumb %}
+    <i class="pi pi-angle-right"></i>
+    <a href="{{ path('app_assunto_index') }}">Assuntos</a>
+    <i class="pi pi-angle-right"></i>
+    {{ assunto.descricao }}
+{% endblock %}
+
+{% block content %}
+<div class="row g-3">
+
+    <div class="col-12 col-lg-4">
+        <div class="p-card">
+            <div class="p-card-header">
+                <h3 class="p-card-title"><i class="pi pi-tag"></i> {{ assunto.descricao }}</h3>
+            </div>
+            <div class="p-card-body">
+                {{ form_start(form, {attr: {method: 'POST', id: 'edit-form'}}) }}
+                    <div class="mb-3">{{ form_row(form.descricao) }}</div>
+                    <div style="font-size:.8rem;color:var(--text-secondary);">
+                        <div><i class="pi pi-calendar"></i> Criado em: {{ assunto.createdAt|date('d/m/Y H:i') }}</div>
+                        {% if assunto.updatedAt %}<div class="mt-1"><i class="pi pi-refresh"></i> Atualizado: {{ assunto.updatedAt|date('d/m/Y H:i') }}</div>{% endif %}
+                    </div>
+                {{ form_end(form) }}
+            </div>
+            <div class="p-card-footer">
+                <a href="{{ path('app_assunto_index') }}" class="p-btn p-btn-secondary p-btn-sm">
+                    <i class="pi pi-arrow-left"></i> Voltar
+                </a>
+                <div class="d-flex gap-2">
+                    <form method="post" action="{{ path('app_assunto_delete', {id: assunto.id}) }}" class="d-inline">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ assunto.id) }}">
+                        <button type="button" class="p-btn p-btn-danger p-btn-sm btn-delete" data-label='"{{ assunto.descricao }}"'>
+                            <i class="pi pi-trash"></i> Excluir
+                        </button>
+                    </form>
+                    <button type="submit" form="edit-form" class="p-btn p-btn-primary p-btn-sm">
+                        <i class="pi pi-check"></i> Salvar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-8">
+        <div class="p-card">
+            <div class="p-card-header">
+                <h3 class="p-card-title"><i class="pi pi-book"></i> Livros vinculados</h3>
+                <span class="p-badge p-badge-primary">{{ livros|length }}</span>
+            </div>
+            <div class="p-card-body" style="padding:0;">
+                {% if livros|length > 0 %}
+                <div class="dt-wrapper">
+                    <table class="p-datatable w-full" data-order="0,asc">
+                        <thead>
+                            <tr>
+                                <th>Título</th>
+                                <th style="width:160px;">Editora</th>
+                                <th style="width:60px;">Ano</th>
+                                <th style="width:100px;">Preço</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for livro in livros %}
+                            <tr>
+                                <td><strong>{{ livro.titulo }}</strong>{% if livro.isbn %}<br><small class="text-muted">ISBN: {{ livro.isbn }}</small>{% endif %}</td>
+                                <td>{{ livro.editora ?? '—' }}</td>
+                                <td>{{ livro.ano_publicacao ?? '—' }}</td>
+                                <td>{% if livro.preco %}<span style="color:var(--success);font-weight:600;">R$ {{ livro.preco|number_format(2, ',', '.') }}</span>{% else %}—{% endif %}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div style="padding:2rem;text-align:center;color:var(--text-secondary);">
+                    <i class="pi pi-inbox" style="font-size:2rem;display:block;margin-bottom:.5rem;"></i>
+                    Nenhum livro vinculado a este assunto.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+</div>
+{% include 'admin/_modals.html.twig' %}
+{% endblock %}
+
+{% block javascripts %}
+<script src="/js/datatable.js"></script>
+<script src="/js/modal-crud.js"></script>
+{% endblock %}

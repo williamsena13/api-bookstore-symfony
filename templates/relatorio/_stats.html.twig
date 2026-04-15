@@ -1,0 +1,16 @@
+{# Componente: stat cards de relatório. items = [{icon, color, bg, value, label}] #}
+<div class="row g-3 mb-4">
+    {% for item in items %}
+    <div class="col-md-4">
+        <div class="public-card" style="display:flex;align-items:center;gap:1rem;padding:1.25rem 1.5rem;">
+            <div style="width:48px;height:48px;border-radius:12px;background:{{ item.bg }};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <i class="pi {{ item.icon }}" style="color:{{ item.color }};font-size:1.4rem;"></i>
+            </div>
+            <div>
+                <div style="font-size:1.5rem;font-weight:700;color:#f1f5f9;line-height:1;">{{ item.value }}</div>
+                <div style="font-size:.8rem;color:#64748b;">{{ item.label }}</div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>

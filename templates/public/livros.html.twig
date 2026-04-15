@@ -1,0 +1,92 @@
+{% extends 'public/layout.html.twig' %}
+{% block title %}Acervo — {{ livraria.nome ?? 'Bookstore' }}{% endblock %}
+{% block nav_livros %}active{% endblock %}
+
+{% block content %}
+<div class="pub-page-hero">
+    <div class="container">
+        <h1 class="pub-page-hero-title"><i class="pi pi-book"></i> Acervo de Livros</h1>
+        <p class="pub-page-hero-sub">{{ livros|length }} títulos disponíveis</p>
+    </div>
+</div>
+
+<div class="container py-4">
+
+    <div class="pub-search-bar mb-4">
+        <i class="pi pi-search pub-search-icon"></i>
+        <input type="text" id="pubSearchLivros" class="pub-search-input" placeholder="Buscar por título, autor, editora, assunto...">
+        <span id="pubSearchCount" class="pub-search-count"></span>
+    </div>
+
+    <div class="row g-3" id="livrosGrid" data-card-grid data-page-size="12">
+        {% for l in livros %}
+        <div class="col-xl-3 col-lg-4 col-md-6">
+            <div class="pub-grid-card">
+                <div class="pub-grid-card-cover" style="background:linear-gradient(135deg,#1e40af,#1d4ed8);">
+                    <div class="pub-grid-card-icon"><i class="pi pi-book"></i></div>
+                    <p class="pub-grid-card-title">{{ l.titulo }}</p>
+                    {% if l.ano_publicacao or l.edicao %}
+                    <p class="pub-grid-card-meta">
+                        {% if l.edicao %}{{ l.edicao }}ª ed.{% endif %}{% if l.ano_publicacao %} · {{ l.ano_publicacao }}{% endif %}
+                    </p>
+                    {% endif %}
+                </div>
+                <div class="pub-grid-card-body">
+                    {% if l.editora %}
+                    <div class="pub-grid-card-info"><i class="pi pi-building"></i> {{ l.editora }}</div>
+                    {% endif %}
+                    {% if l.isbn %}
+                    <div class="pub-grid-card-info" style="font-size:.72rem;"><i class="pi pi-barcode"></i> {{ l.isbn }}</div>
+                    {% endif %}
+                    {% if l.autores %}
+                    <div class="pub-grid-card-tags">
+                        {% for nome in l.autores|split(', ')|slice(0,3) %}
+                            <span class="pub-tag pub-tag-indigo"><i class="pi pi-user"></i> {{ nome }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    {% if l.assuntos %}
+                    <div class="pub-grid-card-tags">
+                        {% for s in l.assuntos|split(', ')|slice(0,2) %}
+                            <span class="pub-tag pub-tag-amber">{{ s }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    {% if l.preco %}
+                    <div class="pub-grid-card-count mt-auto" style="background:rgba(34,197,94,0.15);color:#86efac;">
+                        <i class="pi pi-dollar"></i> R$ {{ l.preco|number_format(2, ',', '.') }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12 text-center py-5" style="color:#64748b;">
+            <i class="pi pi-inbox" style="font-size:2.5rem;display:block;margin-bottom:.75rem;"></i>
+            Nenhum livro cadastrado.
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var input = document.getElementById('pubSearchLivros');
+    var countEl = document.getElementById('pubSearchCount');
+    var grid = document.getElementById('livrosGrid');
+
+    input.addEventListener('input', function () {
+        var q = this.value.toLowerCase().trim();
+        var visible = 0;
+        grid.querySelectorAll(':scope > [class*="col-"]').forEach(function (card) {
+            var show = !q || card.textContent.toLowerCase().includes(q);
+            card.style.display = show ? '' : 'none';
+            if (show) visible++;
+        });
+        countEl.textContent = q ? visible + ' resultado' + (visible !== 1 ? 's' : '') : '';
+    });
+});
+</script>
+{% endblock %}

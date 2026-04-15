@@ -1,0 +1,466 @@
+{% extends 'admin/layout.html.twig' %}
+{% block title %}Livraria — {{ livraria.nome ?? 'Bookstore' }}{% endblock %}
+{% block page_title %}Configurações da Livraria{% endblock %}
+{% block breadcrumb %}<i class="pi pi-angle-right"></i> Livraria{% endblock %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+#map { height: 320px; border-radius: 10px; border: 1px solid var(--border); }
+.upload-field { display: table; width: 100%; border-spacing: 12px 0; }
+.upload-thumb, .upload-info { display: table-cell; vertical-align: middle; }
+.upload-thumb {
+    width: 80px; min-width: 80px; max-width: 80px; height: 80px;
+    border-radius: 10px; border: 2px dashed var(--border); background: #f8fafc;
+    text-align: center; line-height: 76px; overflow: hidden; position: relative;
+}
+.upload-thumb-sm { width: 48px; min-width: 48px; max-width: 48px; height: 48px; border-radius: 8px; line-height: 44px; }
+.upload-thumb img {
+    position: absolute; top: 0; left: 0;
+    width: 100% !important; height: 100% !important;
+    max-width: 100% !important; object-fit: contain; display: block !important;
+}
+.upload-thumb i { color: var(--text-secondary); font-size: 1.4rem; line-height: inherit; }
+.upload-thumb-sm i { font-size: 1.1rem; }
+.upload-info small { display: block; color: var(--text-secondary); font-size: .78rem; margin-bottom: .5rem; }
+.preset-btn {
+    display: inline-flex; align-items: center; gap: .5rem;
+    padding: .4rem .875rem; border-radius: 8px;
+    border: 2px solid var(--border); background: var(--card-bg);
+    font-size: .8rem; font-weight: 500; color: var(--text-primary);
+    cursor: pointer; transition: border-color .2s, box-shadow .2s;
+}
+.preset-btn span { width: 14px; height: 14px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+.preset-btn:hover { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+.preset-btn.active { border-color: var(--primary); background: var(--primary-light); }
+</style>
+{% endblock %}
+
+{% block content %}
+{{ form_start(form, {attr: {enctype: 'multipart/form-data', id: 'livraria-form'}}) }}
+
+<ul class="nav nav-tabs mb-4" role="tablist">
+    <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tab-geral"><i class="pi pi-info-circle"></i> Geral</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-endereco"><i class="pi pi-map-marker"></i> Endereço</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-visual"><i class="pi pi-palette"></i> Identidade Visual</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-tema"><i class="pi pi-sliders-h"></i> Tema</a></li>
+</ul>
+
+<div class="tab-content">
+
+    {# ABA GERAL #}
+    <div class="tab-pane fade show active" id="tab-geral">
+        <div class="p-card">
+            <div class="p-card-header"><h3 class="p-card-title"><i class="pi pi-info-circle"></i> Informações Gerais</h3></div>
+            <div class="p-card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">{{ form_label(form.nome) }}{{ form_widget(form.nome) }}{{ form_errors(form.nome) }}</div>
+                    <div class="col-md-3">{{ form_label(form.telefone) }}{{ form_widget(form.telefone) }}{{ form_errors(form.telefone) }}</div>
+                    <div class="col-md-3">{{ form_label(form.email) }}{{ form_widget(form.email) }}{{ form_errors(form.email) }}</div>
+                    <div class="col-12">{{ form_label(form.descricao) }}{{ form_widget(form.descricao) }}{{ form_errors(form.descricao) }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# ABA ENDEREÇO #}
+    <div class="tab-pane fade" id="tab-endereco">
+        <div class="p-card mb-3">
+            <div class="p-card-header"><h3 class="p-card-title"><i class="pi pi-map-marker"></i> Endereço</h3></div>
+            <div class="p-card-body">
+                <div class="row g-3">
+                    <div class="col-md-2">
+                        {{ form_label(form.cep) }}
+                        {{ form_widget(form.cep) }}
+                        <div id="cep-feedback" class="invalid-feedback"></div>
+                    </div>
+                    <div class="col-md-5">{{ form_label(form.logradouro) }}{{ form_widget(form.logradouro) }}</div>
+                    <div class="col-md-2">{{ form_label(form.numero) }}{{ form_widget(form.numero) }}</div>
+                    <div class="col-md-3">{{ form_label(form.complemento) }}{{ form_widget(form.complemento) }}</div>
+                    <div class="col-md-4">{{ form_label(form.bairro) }}{{ form_widget(form.bairro) }}</div>
+                    <div class="col-md-4">{{ form_label(form.cidade) }}{{ form_widget(form.cidade) }}</div>
+                    <div class="col-md-2">{{ form_label(form.uf) }}{{ form_widget(form.uf) }}</div>
+                </div>
+                {{ form_widget(form.latitude) }}
+                {{ form_widget(form.longitude) }}
+            </div>
+        </div>
+
+        <div class="p-card">
+            <div class="p-card-header">
+                <h3 class="p-card-title"><i class="pi pi-map"></i> Localização no Mapa</h3>
+                <div class="flex gap-2">
+                    <button type="button" class="p-btn p-btn-primary p-btn-sm" id="btn-buscar-mapa"><i class="pi pi-search"></i> Buscar endereço</button>
+                    <button type="button" class="p-btn p-btn-secondary p-btn-sm" id="btn-minha-loc"><i class="pi pi-crosshairs"></i> Minha localização</button>
+                </div>
+            </div>
+            <div class="p-card-body">
+                <p style="font-size:.82rem;color:var(--text-secondary);margin-bottom:.75rem;">
+                    <i class="pi pi-info-circle"></i> Clique no mapa para definir a localização ou use os botões acima. Arraste o marcador para ajustar.
+                </p>
+                <div id="map"></div>
+                {% if livraria.latitude and livraria.longitude %}
+                <div class="mt-2" style="font-size:.8rem;color:var(--text-secondary);">
+                    <i class="pi pi-map-marker"></i> Coordenadas salvas: {{ livraria.latitude }}, {{ livraria.longitude }}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {# ABA IDENTIDADE VISUAL #}
+    <div class="tab-pane fade" id="tab-visual">
+        <div class="p-card">
+            <div class="p-card-header"><h3 class="p-card-title"><i class="pi pi-palette"></i> Identidade Visual</h3></div>
+            <div class="p-card-body">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <label class="form-label">Favicon</label>
+                        <div class="upload-field">
+                            <div class="upload-thumb upload-thumb-sm" id="faviconThumb">
+                                {% if livraria.favicon %}
+                                    <img src="{{ livraria.favicon }}" id="faviconPreview" alt="Favicon">
+                                {% else %}
+                                    <i class="pi pi-image" id="faviconIcon"></i>
+                                    <img src="" id="faviconPreview" style="display:none;" alt="Favicon">
+                                {% endif %}
+                            </div>
+                            <div class="upload-info">
+                                <small>Recomendado: 32x32px (ICO, PNG, max 1MB)</small>
+                                {{ form_widget(form.faviconFile, {attr: {id: 'faviconInput'}}) }}
+                                {{ form_errors(form.faviconFile) }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Logo do Navbar</label>
+                        <div class="upload-field">
+                            <div class="upload-thumb" id="logoThumb">
+                                {% if livraria.logoNavbar %}
+                                    <img src="{{ livraria.logoNavbar }}" id="logoPreview" alt="Logo">
+                                {% else %}
+                                    <i class="pi pi-image" id="logoIcon"></i>
+                                    <img src="" id="logoPreview" style="display:none;" alt="Logo">
+                                {% endif %}
+                            </div>
+                            <div class="upload-info">
+                                <small>Recomendado: altura 40px, PNG transparente (max 2MB)</small>
+                                {{ form_widget(form.logoNavbarFile, {attr: {id: 'logoInput'}}) }}
+                                {{ form_errors(form.logoNavbarFile) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# ABA TEMA #}
+    <div class="tab-pane fade" id="tab-tema">
+        <div class="row g-3">
+            <div class="col-md-8">
+                <div class="p-card mb-3">
+                    <div class="p-card-header"><h3 class="p-card-title"><i class="pi pi-palette"></i> Paleta de Cores</h3></div>
+                    <div class="p-card-body">
+                        <p style="font-size:.82rem;color:var(--text-secondary);margin-bottom:1rem;">As alterações refletem imediatamente no navbar, sidemenu e botões. Salve para persistir.</p>
+
+                        {# TEMAS PRONTOS — dentro da paleta #}
+                        <label class="form-label">Temas prontos <small style="font-weight:400;">(aplica todas as cores de uma vez)</small></label>
+                        <div class="d-flex flex-wrap gap-2 mb-4">
+                            <button type="button" class="preset-btn" data-primary="#6366f1" data-sidebar="#1e1e2e" data-success="#22c55e" title="Índigo"><span style="background:#6366f1;"></span> Índigo</button>
+                            <button type="button" class="preset-btn" data-primary="#3b82f6" data-sidebar="#0f172a" data-success="#22c55e" title="Azul"><span style="background:#3b82f6;"></span> Azul</button>
+                            <button type="button" class="preset-btn" data-primary="#10b981" data-sidebar="#1f2937" data-success="#06b6d4" title="Esmeralda"><span style="background:#10b981;"></span> Esmeralda</button>
+                            <button type="button" class="preset-btn" data-primary="#f43f5e" data-sidebar="#1e1e2e" data-success="#22c55e" title="Rosa"><span style="background:#f43f5e;"></span> Rosa</button>
+                            <button type="button" class="preset-btn" data-primary="#f97316" data-sidebar="#1c1917" data-success="#22c55e" title="Laranja"><span style="background:#f97316;"></span> Laranja</button>
+                            <button type="button" class="preset-btn" data-primary="#a855f7" data-sidebar="#1e1b2e" data-success="#22c55e" title="Roxo"><span style="background:#a855f7;"></span> Roxo</button>
+                            <button type="button" class="preset-btn" data-primary="#14b8a6" data-sidebar="#0f2027" data-success="#6366f1" title="Teal"><span style="background:#14b8a6;"></span> Teal</button>
+                            <button type="button" class="preset-btn" data-primary="#475569" data-sidebar="#1e293b" data-success="#22c55e" title="Slate"><span style="background:#475569;"></span> Slate</button>
+                        </div>
+
+                        <hr style="border-color:var(--border);margin:1rem 0;">
+
+                        {# PERSONALIZAR INDIVIDUALMENTE #}
+                        <label class="form-label">Personalizar cores individualmente</label>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                {{ form_label(form.corPrimaria) }}
+                                <div class="d-flex align-items-center gap-2">
+                                    {{ form_widget(form.corPrimaria, {attr: {id: 'corPrimaria', class: 'form-control form-control-color'}}) }}
+                                    <span id="corPrimariaHex" style="font-size:.85rem;color:var(--text-secondary);font-family:monospace;">{{ livraria.corPrimaria ?? '#6366f1' }}</span>
+                                </div>
+                                <small style="color:var(--text-secondary);font-size:.75rem;">Botões, links, navbar</small>
+                            </div>
+                            <div class="col-md-4">
+                                {{ form_label(form.corSecundaria) }}
+                                <div class="d-flex align-items-center gap-2">
+                                    {{ form_widget(form.corSecundaria, {attr: {id: 'corSecundaria', class: 'form-control form-control-color'}}) }}
+                                    <span id="corSecundariaHex" style="font-size:.85rem;color:var(--text-secondary);font-family:monospace;">{{ livraria.corSecundaria ?? '#22c55e' }}</span>
+                                </div>
+                                <small style="color:var(--text-secondary);font-size:.75rem;">Sucesso, confirmações</small>
+                            </div>
+                            <div class="col-md-4">
+                                {{ form_label(form.corSidebar) }}
+                                <div class="d-flex align-items-center gap-2">
+                                    {{ form_widget(form.corSidebar, {attr: {id: 'corSidebar', class: 'form-control form-control-color'}}) }}
+                                    <span id="corSidebarHex" style="font-size:.85rem;color:var(--text-secondary);font-family:monospace;">{{ livraria.corSidebar ?? '#1e1e2e' }}</span>
+                                </div>
+                                <small style="color:var(--text-secondary);font-size:.75rem;">Fundo do sidemenu</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {# PREVIEW #}
+            <div class="col-md-4">
+                <div class="p-card" style="position:sticky;top:80px;">
+                    <div class="p-card-header"><h3 class="p-card-title"><i class="pi pi-eye"></i> Preview ao vivo</h3></div>
+                    <div class="p-card-body" style="padding:1rem;">
+                        {% set pc = livraria.corPrimaria ?? '#6366f1' %}
+                        {% set sc = livraria.corSecundaria ?? '#22c55e' %}
+                        {% set sb = livraria.corSidebar ?? '#1e1e2e' %}
+                        <div id="previewSidebar" style="border-radius:8px 8px 0 0;padding:.875rem 1rem;display:flex;align-items:center;gap:.625rem;background:{{ sb }};">
+                            <div id="previewBrand" style="width:28px;height:28px;border-radius:7px;background:{{ pc }};display:flex;align-items:center;justify-content:center;color:#fff;font-size:.8rem;flex-shrink:0;">
+                                <i class="pi pi-book"></i>
+                            </div>
+                            <span style="color:#fff;font-weight:600;font-size:.85rem;">{{ livraria.nome ?? 'Bookstore' }}</span>
+                        </div>
+                        <div id="previewNav" style="background:{{ sb }};padding:.5rem 0;">
+                            <div id="previewNavActive" style="display:flex;align-items:center;gap:.5rem;padding:.5rem 1rem;border-left:3px solid {{ pc }};background:{{ pc }}22;">
+                                <i class="pi pi-home" style="color:#fff;font-size:.85rem;"></i>
+                                <span style="color:#fff;font-size:.8rem;">Dashboard</span>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:.5rem;padding:.5rem 1rem;border-left:3px solid transparent;">
+                                <i class="pi pi-book" style="color:#a0a0b8;font-size:.85rem;"></i>
+                                <span style="color:#a0a0b8;font-size:.8rem;">Livros</span>
+                            </div>
+                        </div>
+                        <div style="background:#f4f6fb;padding:.875rem;border-radius:0 0 8px 8px;">
+                            <div style="display:flex;gap:.5rem;margin-bottom:.625rem;">
+                                <div id="previewBtn" style="background:{{ pc }};color:#fff;padding:.3rem .75rem;border-radius:6px;font-size:.75rem;font-weight:500;">Primário</div>
+                                <div id="previewBtnSec" style="background:{{ sc }};color:#fff;padding:.3rem .75rem;border-radius:6px;font-size:.75rem;font-weight:500;">Sucesso</div>
+                            </div>
+                            <div style="background:#fff;border-radius:6px;padding:.625rem;border:1px solid #e2e8f0;">
+                                <div id="previewBar" style="height:6px;border-radius:3px;margin-bottom:.375rem;background:{{ pc }};"></div>
+                                <div style="height:6px;background:#e2e8f0;border-radius:3px;width:70%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="flex justify-content-end mt-4">
+    <button type="submit" class="p-btn p-btn-primary p-btn-sm"><i class="pi pi-check"></i> Salvar configurações</button>
+</div>
+
+{{ form_end(form) }}
+{% endblock %}
+
+{% block javascripts %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="/js/viacep.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    // ===== MAPA =====
+    var mapInitialized = false;
+    var map, marker;
+    var latInput = document.getElementById('livraria_latitude');
+    var lngInput = document.getElementById('livraria_longitude');
+    var hasCoords = {{ livraria.hasCoordinates() ? 'true' : 'false' }};
+    var savedLat = {{ livraria.latitude ?? '-23.5505' }};
+    var savedLng = {{ livraria.longitude ?? '-46.6333' }};
+
+    document.querySelector('[href="#tab-endereco"]').addEventListener('shown.bs.tab', function () {
+        if (mapInitialized) { map.invalidateSize(); return; }
+        mapInitialized = true;
+        map = L.map('map').setView([savedLat, savedLng], hasCoords ? 15 : 5);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(map);
+        if (hasCoords) {
+            marker = L.marker([savedLat, savedLng], { draggable: true }).addTo(map);
+            marker.on('dragend', function (e) { latInput.value = e.target.getLatLng().lat.toFixed(7); lngInput.value = e.target.getLatLng().lng.toFixed(7); });
+        }
+        map.on('click', function (e) { setMarker(e.latlng); });
+    });
+
+    function setMarker(latlng) {
+        if (marker) map.removeLayer(marker);
+        marker = L.marker(latlng, { draggable: true }).addTo(map);
+        marker.on('dragend', function (e) { latInput.value = e.target.getLatLng().lat.toFixed(7); lngInput.value = e.target.getLatLng().lng.toFixed(7); });
+        latInput.value = latlng.lat.toFixed(7);
+        lngInput.value = latlng.lng.toFixed(7);
+        map.setView(latlng, 16);
+    }
+
+    document.getElementById('btn-buscar-mapa').addEventListener('click', function () {
+        var query = [
+            document.querySelector('[data-viacep="logradouro"]').value,
+            document.querySelector('[data-viacep="localidade"]').value,
+            document.querySelector('[data-viacep="uf"]').value,
+            'Brasil'
+        ].filter(Boolean).join(', ');
+        if (!query.trim()) { alert('Preencha o endereço primeiro.'); return; }
+        fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(query) + '&limit=1')
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.length > 0) setMarker(L.latLng(parseFloat(data[0].lat), parseFloat(data[0].lon)));
+                else alert('Endereço não encontrado. Clique diretamente no mapa.');
+            })
+            .catch(function() { alert('Erro ao buscar localização.'); });
+    });
+
+    document.getElementById('btn-minha-loc').addEventListener('click', function () {
+        if (!navigator.geolocation) { alert('Geolocalização não suportada.'); return; }
+        navigator.geolocation.getCurrentPosition(
+            function(pos) { setMarker(L.latLng(pos.coords.latitude, pos.coords.longitude)); },
+            function() { alert('Não foi possível obter sua localização.'); }
+        );
+    });
+
+    // ===== PREVIEW DE IMAGENS =====
+    function setupPreview(inputId, previewId, iconId) {
+        var input = document.getElementById(inputId);
+        if (!input) return;
+        input.addEventListener('change', function () {
+            var file = this.files[0];
+            if (!file) return;
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                var preview = document.getElementById(previewId);
+                var icon = document.getElementById(iconId);
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+                if (icon) icon.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+    setupPreview('livraria_faviconFile', 'faviconPreview', 'faviconIcon');
+    setupPreview('livraria_logoNavbarFile', 'logoPreview', 'logoIcon');
+
+    // ===== TEMA =====
+    function getEl(id) {
+        // Tenta id direto, depois prefixo livraria_
+        return document.getElementById(id) || document.getElementById('livraria_' + id);
+    }
+    function getVal(id) { var el = getEl(id); return el ? el.value : null; }
+    function setVal(id, val) { var el = getEl(id); if (el) el.value = val; }
+
+    function applyThemeToLayout(primary, secondary, sidebar) {
+        if (!primary || !secondary || !sidebar) return;
+        var r = document.documentElement;
+        r.style.setProperty('--primary', primary);
+        r.style.setProperty('--primary-light', primary + '22');
+        r.style.setProperty('--primary-dark', primary);
+        r.style.setProperty('--success', secondary);
+        r.style.setProperty('--sidebar-bg', sidebar);
+        var topbar = document.querySelector('.topbar');
+        if (topbar) {
+            topbar.style.borderBottomColor = primary;
+            topbar.style.background = 'linear-gradient(135deg, ' + primary + '08 0%, var(--card-bg) 60%)';
+        }
+        var brand = document.querySelector('.brand-icon');
+        if (brand) brand.style.background = primary;
+        document.querySelectorAll('.sidebar-link.active').forEach(function(l) {
+            l.style.borderLeftColor = primary;
+        });
+    }
+
+    function updatePreview(primary, secondary, sidebar) {
+        if (!primary || !secondary || !sidebar) return;
+        var ids = {
+            previewSidebar: { prop: 'background', val: sidebar },
+            previewNav: { prop: 'background', val: sidebar },
+            previewBrand: { prop: 'background', val: primary },
+            previewBtn: { prop: 'background', val: primary },
+            previewBtnSec: { prop: 'background', val: secondary },
+            previewBar: { prop: 'background', val: primary }
+        };
+        Object.keys(ids).forEach(function(id) {
+            var el = getEl(id);
+            if (el) el.style[ids[id].prop] = ids[id].val;
+        });
+        var navActive = getEl('previewNavActive');
+        if (navActive) { navActive.style.borderLeftColor = primary; navActive.style.background = primary + '22'; }
+        var hexP = getEl('corPrimariaHex'); if (hexP) hexP.textContent = primary;
+        var hexS = getEl('corSecundariaHex'); if (hexS) hexS.textContent = secondary;
+        var hexSb = getEl('corSidebarHex'); if (hexSb) hexSb.textContent = sidebar;
+    }
+
+    function onThemeChange() {
+        var primary = getVal('corPrimaria');
+        var secondary = getVal('corSecundaria');
+        var sidebar = getVal('corSidebar');
+        if (!primary || !secondary || !sidebar) return;
+        updatePreview(primary, secondary, sidebar);
+        applyThemeToLayout(primary, secondary, sidebar);
+    }
+
+    // Listeners nos color pickers
+    ['corPrimaria', 'corSecundaria', 'corSidebar'].forEach(function (id) {
+        var el = getEl(id);
+        if (el) el.addEventListener('input', function() { onThemeChange(); markChanged(); });
+    });
+
+    // Presets
+    document.querySelectorAll('.preset-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            document.querySelectorAll('.preset-btn').forEach(function(b) { b.classList.remove('active'); });
+            this.classList.add('active');
+            var primary = this.dataset.primary;
+            var sidebar = this.dataset.sidebar;
+            var success = this.dataset.success;
+            setVal('corPrimaria', primary);
+            setVal('corSidebar', sidebar);
+            setVal('corSecundaria', success);
+            updatePreview(primary, success, sidebar);
+            applyThemeToLayout(primary, success, sidebar);
+            markChanged();
+        });
+    });
+
+    // Inicializar com valores do banco
+    var initPrimary = getVal('corPrimaria');
+    var initSecondary = getVal('corSecundaria');
+    var initSidebar = getVal('corSidebar');
+    if (initPrimary) {
+        updatePreview(initPrimary, initSecondary, initSidebar);
+        applyThemeToLayout(initPrimary, initSecondary, initSidebar);
+    }
+
+    // Aviso de alterações não salvas
+    var originalPrimary = initPrimary;
+    var originalSecondary = initSecondary;
+    var originalSidebar = initSidebar;
+    var hasUnsavedChanges = false;
+
+    function markChanged() {
+        hasUnsavedChanges = true;
+        var btn = document.querySelector('button[type="submit"]');
+        if (btn && !btn.querySelector('.unsaved-dot')) {
+            var dot = document.createElement('span');
+            dot.className = 'unsaved-dot';
+            dot.style.cssText = 'display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;margin-left:6px;vertical-align:middle;';
+            btn.appendChild(dot);
+        }
+    }
+
+    document.getElementById('livraria-form').addEventListener('submit', function () {
+        hasUnsavedChanges = false;
+    });
+
+    window.addEventListener('beforeunload', function () {
+        if (hasUnsavedChanges && originalPrimary) {
+            applyThemeToLayout(originalPrimary, originalSecondary, originalSidebar);
+        }
+    });
+
+    // Marcar como alterado ao mudar qualquer cor
+    // Presets já chamam markChanged() internamente
+});
+</script>
+{% endblock %}

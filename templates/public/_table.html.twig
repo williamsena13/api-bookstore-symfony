@@ -1,0 +1,21 @@
+{#
+  Componente: tabela pública com DataTable
+  Parâmetros:
+    - title: string
+    - icon: string (pi-*)
+    - headers: array de strings
+    - rows_template: block name (use caller)
+    - order: string ex "0,desc"
+    - empty_msg: string
+#}
+<div class="public-card">
+    <div class="public-card-header">
+        <span><i class="pi pi-{{ icon }}"></i> {{ title }}</span>
+        <span class="p-badge p-badge-primary">{{ count }} registros</span>
+    </div>
+    <div class="public-card-body" style="padding:0;">
+        <div class="dt-wrapper">
+            {{ content|raw }}
+        </div>
+    </div>
+</div>

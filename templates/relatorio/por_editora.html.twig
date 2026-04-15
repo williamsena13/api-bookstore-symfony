@@ -1,0 +1,148 @@
+{% extends 'admin/layout.html.twig' %}
+{% block title %}Relatório por Editora — {{ livraria.nome ?? 'Bookstore' }}{% endblock %}
+{% block page_title %}Relatório por Editora{% endblock %}
+{% block breadcrumb %}<i class="pi pi-angle-right"></i> <a href="{{ path('app_relatorio_index') }}">Relatórios</a> <i class="pi pi-angle-right"></i> Por Editora{% endblock %}
+
+{% set totalLivros = 0 %}
+{% set totalValor = 0.0 %}
+{% for editoraNome, livros in agrupado %}
+    {% set totalLivros = totalLivros + livros|length %}
+    {% for l in livros %}{% if l.preco %}{% set totalValor = totalValor + l.preco %}{% endif %}{% endfor %}
+{% endfor %}
+
+{% block content %}
+
+<div class="flex align-items-center justify-content-between mb-4 no-print flex-wrap gap-2">
+    <div class="flex gap-2">
+        <a href="{{ path('app_relatorio_por_editora_pdf') }}" target="_blank" class="p-btn p-btn-danger p-btn-sm"><i class="pi pi-file-pdf"></i> Exportar PDF</a>
+        <button onclick="exportCSV()" class="p-btn p-btn-success p-btn-sm"><i class="pi pi-download"></i> Exportar CSV</button>
+        <button onclick="window.print()" class="p-btn p-btn-secondary p-btn-sm"><i class="pi pi-print"></i> Imprimir</button>
+    </div>
+    <a href="{{ path('app_relatorio_index') }}" class="p-btn p-btn-secondary p-btn-sm"><i class="pi pi-arrow-left"></i> Voltar</a>
+</div>
+
+<div class="grid mb-4">
+    <div class="col-12 md:col-4">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#dcfce7;"><i class="pi pi-building" style="color:#22c55e;font-size:1.4rem;"></i></div>
+            <div><div class="stat-value">{{ agrupado|length }}</div><div class="stat-label">Editoras</div></div>
+        </div>
+    </div>
+    <div class="col-12 md:col-4">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#eef2ff;"><i class="pi pi-book" style="color:#6366f1;font-size:1.4rem;"></i></div>
+            <div><div class="stat-value">{{ totalLivros }}</div><div class="stat-label">Livros</div></div>
+        </div>
+    </div>
+    <div class="col-12 md:col-4">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#fef3c7;"><i class="pi pi-dollar" style="color:#f59e0b;font-size:1.4rem;"></i></div>
+            <div><div class="stat-value" style="font-size:1.2rem;">R$ {{ totalValor|number_format(2, ',', '.') }}</div><div class="stat-label">Valor total</div></div>
+        </div>
+    </div>
+</div>
+
+<div class="grid mb-4">
+    <div class="col-12 lg:col-5">
+        <div class="chart-card">
+            <div class="chart-card-title"><i class="pi pi-chart-pie" style="color:#22c55e;"></i> Distribuição por Editora</div>
+            <div class="chart-card-subtitle">Proporção de livros por editora</div>
+            <div class="chart-container" style="height:280px;"><canvas id="chartEditoraPie"></canvas></div>
+        </div>
+    </div>
+    <div class="col-12 lg:col-7">
+        <div class="chart-card">
+            <div class="chart-card-title"><i class="pi pi-chart-bar" style="color:#6366f1;"></i> Livros por Editora</div>
+            <div class="chart-card-subtitle">Quantidade de títulos por editora</div>
+            <div class="chart-container" style="height:280px;"><canvas id="chartEditoraBar"></canvas></div>
+        </div>
+    </div>
+</div>
+
+{% if agrupado|length > 0 %}
+{% for editoraNome, livros in agrupado %}
+<div class="p-card mb-3 admin-toggle-card">
+    <div class="p-card-header admin-toggle-header" style="cursor:pointer;user-select:none;">
+        <span style="font-weight:600;"><i class="pi pi-building" style="color:#22c55e;"></i> {{ editoraNome }}</span>
+        <div style="display:flex;align-items:center;gap:.75rem;">
+            <span class="p-badge p-badge-primary">{{ livros|length }} livro{{ livros|length > 1 ? 's' : '' }}</span>
+            <i class="pi pi-chevron-down" style="font-size:.75rem;color:var(--text-secondary);transition:transform .2s;"></i>
+        </div>
+    </div>
+    <div class="admin-toggle-body" style="overflow:hidden;transition:max-height .25s ease,opacity .2s;max-height:0;opacity:0;">
+        <div class="p-card-body" style="padding:0;">
+            <div class="dt-wrapper">
+                <table class="p-datatable w-full" data-order="0,asc">
+                    <thead><tr><th>Título</th><th>Ed.</th><th>Ano</th><th>Preço</th><th>Autores</th><th>Assuntos</th></tr></thead>
+                    <tbody>
+                        {% for l in livros %}
+                        <tr>
+                            <td><strong>{{ l.livro_titulo }}</strong></td>
+                            <td>{{ l.edicao ? l.edicao ~ 'ª' : '—' }}</td>
+                            <td>{{ l.ano_publicacao ?? '—' }}</td>
+                            <td>{% if l.preco %}<span style="color:var(--success);font-weight:600;">R$ {{ l.preco|number_format(2, ',', '.') }}</span>{% else %}—{% endif %}</td>
+                            <td>{{ l.autores|default('—') }}</td>
+                            <td>{{ l.assuntos|default('—') }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% else %}
+<div class="p-card p-card-body text-center" style="color:var(--text-secondary);padding:3rem;">
+    <i class="pi pi-info-circle" style="font-size:2rem;"></i><p class="mt-2">Nenhum dado para exibir.</p>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block javascripts %}
+<script src="/js/datatable.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.admin-toggle-header').forEach(function (h) {
+        h.addEventListener('click', function () {
+            var body = this.nextElementSibling;
+            var icon = this.querySelector('.pi-chevron-down');
+            var open = body.style.maxHeight !== '0px' && body.style.maxHeight !== '';
+            body.style.maxHeight = open ? '0' : body.scrollHeight + 200 + 'px';
+            body.style.opacity = open ? '0' : '1';
+            if (icon) icon.style.transform = open ? 'rotate(-90deg)' : '';
+        });
+    });
+
+    const palette = ['#6366f1','#22c55e','#f59e0b','#ef4444','#06b6d4','#a855f7','#f97316','#14b8a6','#ec4899','#84cc16'];
+    const labels = {{ agrupado|keys|json_encode|raw }};
+    const totais = [{% for e, livros in agrupado %}{{ livros|length }},{% endfor %}];
+
+    new Chart(document.getElementById('chartEditoraPie'), {
+        type: 'doughnut',
+        data: { labels, datasets: [{ data: totais, backgroundColor: palette, borderWidth: 0, hoverOffset: 8 }] },
+        options: { responsive: true, maintainAspectRatio: false, cutout: '55%', plugins: { legend: { position: 'bottom', labels: { padding: 10, boxWidth: 12, font: { size: 11 } } } } }
+    });
+
+    new Chart(document.getElementById('chartEditoraBar'), {
+        type: 'bar',
+        data: { labels, datasets: [{ label: 'Livros', data: totais, backgroundColor: palette.map(c => c + '33'), borderColor: palette, borderWidth: 2, borderRadius: 6 }] },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: 'rgba(0,0,0,0.05)' } }, x: { grid: { display: false } } }
+        }
+    });
+});
+
+function exportCSV() {
+    const rows = [['Editora','Título','Edição','Ano','Preço','Autores','Assuntos']];
+    {% for editoraNome, livros in agrupado %}{% for l in livros %}
+    rows.push(['{{ editoraNome|replace({"'": "'"}) }}','{{ l.livro_titulo|replace({"'": "'"}) }}','{{ l.edicao ?? '' }}','{{ l.ano_publicacao ?? '' }}','{{ l.preco ?? '' }}','{{ (l.autores ?? '')|replace({"'": "'"}) }}','{{ (l.assuntos ?? '')|replace({"'": "'"}) }}']);
+    {% endfor %}{% endfor %}
+    const csv = rows.map(r => r.map(v => '"' + String(v).replace(/"/g, '""') + '"').join(',')).join('\n');
+    const a = document.createElement('a'); a.href = 'data:text/csv;charset=utf-8,\uFEFF' + encodeURIComponent(csv); a.download = 'relatorio-por-editora.csv'; a.click();
+}
+</script>
+{% endblock %}

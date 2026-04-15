@@ -1,0 +1,37 @@
+{% extends 'public/layout.html.twig' %}
+{% block title %}Relatórios — {{ livraria.nome ?? 'Bookstore' }}{% endblock %}
+{% block nav_relatorios %}active{% endblock %}
+
+{% block content %}
+<div class="pub-page-hero">
+    <div class="container">
+        <h1 class="pub-page-hero-title"><i class="pi pi-chart-bar"></i> Relatórios</h1>
+        <p class="pub-page-hero-sub">Dados do acervo em tempo real</p>
+    </div>
+</div>
+
+<div class="container py-4">
+    <div class="row g-3">
+        {% set reports = [
+            {route: 'app_public_relatorio_por_autor',   icon: 'pi-user',     color: '#6366f1', bg: 'rgba(99,102,241,0.12)',  title: 'Por Autor',   sub: 'Livros agrupados por autor'},
+            {route: 'app_public_relatorio_por_editora', icon: 'pi-building', color: '#22c55e', bg: 'rgba(34,197,94,0.12)',   title: 'Por Editora', sub: 'Livros agrupados por editora'},
+            {route: 'app_public_relatorio_por_assunto', icon: 'pi-tag',      color: '#ef4444', bg: 'rgba(239,68,68,0.12)',   title: 'Por Assunto', sub: 'Livros agrupados por assunto'},
+            {route: 'app_public_relatorio_ranking',     icon: 'pi-star',     color: '#f59e0b', bg: 'rgba(245,158,11,0.12)',  title: 'Rankings',    sub: 'Top autores, editoras e livros'},
+        ] %}
+        {% for r in reports %}
+        <div class="col-md-6">
+            <a href="{{ path(r.route) }}" class="pub-report-card">
+                <div class="pub-report-card-icon" style="background:{{ r.bg }};">
+                    <i class="pi {{ r.icon }}" style="color:{{ r.color }};"></i>
+                </div>
+                <div>
+                    <p class="pub-report-card-title">{{ r.title }}</p>
+                    <p class="pub-report-card-sub">{{ r.sub }}</p>
+                </div>
+                <i class="pi pi-chevron-right ms-auto" style="color:#334155;"></i>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

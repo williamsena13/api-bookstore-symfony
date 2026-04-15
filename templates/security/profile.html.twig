@@ -1,0 +1,117 @@
+{% extends 'admin/layout.html.twig' %}
+{% block title %}Meu Perfil — {{ livraria.nome ?? 'Bookstore' }}{% endblock %}
+{% block page_title %}Meu Perfil{% endblock %}
+{% block breadcrumb %}<i class="pi pi-angle-right"></i> Perfil{% endblock %}
+
+{% block content %}
+{{ form_start(form, {attr: {enctype: 'multipart/form-data'}}) }}
+<div class="grid">
+
+    {# COLUNA ESQUERDA — FOTO #}
+    <div class="col-12 md:col-4">
+        <div class="p-card">
+            <div class="p-card-header"><h3 class="p-card-title"><i class="pi pi-user"></i> Foto de Perfil</h3></div>
+            <div class="p-card-body" style="text-align:center;">
+
+                {# Avatar / Preview #}
+                <div style="position:relative;display:inline-block;margin-bottom:1rem;">
+                    {% if app.user.foto %}
+                        <img src="{{ app.user.foto }}" id="fotoPreview"
+                             style="width:96px;height:96px;border-radius:50%;object-fit:cover;border:3px solid var(--primary);display:block;"
+                             alt="Foto de perfil">
+                    {% else %}
+                        <div id="fotoPlaceholder" style="width:96px;height:96px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;color:#fff;font-size:2.2rem;font-weight:700;margin:0 auto;">
+                            {{ (app.user.nome ?? app.user.email)|first|upper }}
+                        </div>
+                        <img src="" id="fotoPreview"
+                             style="width:96px;height:96px;border-radius:50%;object-fit:cover;border:3px solid var(--primary);display:none;"
+                             alt="Foto de perfil">
+                    {% endif %}
+                    <label for="fotoInput" style="position:absolute;bottom:0;right:0;width:28px;height:28px;background:var(--primary);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid #fff;">
+                        <i class="pi pi-camera" style="color:#fff;font-size:.75rem;"></i>
+                    </label>
+                </div>
+
+                <div style="font-size:1rem;font-weight:700;color:var(--text-primary);">{{ app.user.nome ?? '—' }}</div>
+                <div style="font-size:.82rem;color:var(--text-secondary);margin-bottom:.5rem;">{{ app.user.email }}</div>
+                <span class="p-badge p-badge-primary">Administrador</span>
+
+                <div style="margin-top:1.25rem;text-align:left;">
+                    {{ form_widget(form.fotoFile, {attr: {id: 'fotoInput', style: 'display:none;'}}) }}
+                    {{ form_errors(form.fotoFile) }}
+                    <small style="color:var(--text-secondary);font-size:.75rem;display:block;margin-top:.25rem;">JPG, PNG, WEBP — máx. 2MB</small>
+                    <div id="fotoNome" style="font-size:.78rem;color:var(--primary);margin-top:.25rem;display:none;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# COLUNA DIREITA — DADOS + SENHA #}
+    <div class="col-12 md:col-8">
+        <div class="p-card mb-3">
+            <div class="p-card-header">
+                <h3 class="p-card-title"><i class="pi pi-user-edit"></i> Dados Pessoais</h3>
+            </div>
+            <div class="p-card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        {{ form_label(form.nome) }}
+                        {{ form_widget(form.nome) }}
+                        {{ form_errors(form.nome) }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form_label(form.email) }}
+                        {{ form_widget(form.email) }}
+                        {{ form_errors(form.email) }}
+                    </div>
+                    <div class="col-12"><hr style="border-color:var(--border);margin:.25rem 0;"></div>
+                    <div class="col-12">
+                        <label style="font-size:.82rem;font-weight:600;color:var(--text-secondary);margin-bottom:.5rem;display:block;">
+                            <i class="pi pi-lock"></i> Alterar Senha
+                            <span style="font-weight:400;font-size:.75rem;"> — deixe em branco para manter a atual</span>
+                        </label>
+                    </div>
+                    <div class="col-md-6">
+                        {{ form_label(form.plainPassword.first) }}
+                        {{ form_widget(form.plainPassword.first) }}
+                        {{ form_errors(form.plainPassword.first) }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form_label(form.plainPassword.second) }}
+                        {{ form_widget(form.plainPassword.second) }}
+                        {{ form_errors(form.plainPassword.second) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex justify-content-end">
+            <button type="submit" class="p-btn p-btn-primary p-btn-sm">
+                <i class="pi pi-check"></i> Salvar alterações
+            </button>
+        </div>
+    </div>
+
+</div>
+{{ form_end(form) }}
+{% endblock %}
+
+{% block javascripts %}
+<script>
+document.getElementById('fotoInput').addEventListener('change', function () {
+    var file = this.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function (e) {
+        var preview = document.getElementById('fotoPreview');
+        var placeholder = document.getElementById('fotoPlaceholder');
+        var nome = document.getElementById('fotoNome');
+        preview.src = e.target.result;
+        preview.style.display = 'block';
+        if (placeholder) placeholder.style.display = 'none';
+        if (nome) { nome.textContent = file.name; nome.style.display = 'block'; }
+    };
+    reader.readAsDataURL(file);
+});
+</script>
+{% endblock %}

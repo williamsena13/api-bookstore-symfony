@@ -20,7 +20,7 @@ final class Version20260414163136 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('CREATE TABLE livro (id INT AUTO_INCREMENT NOT NULL, titulo VARCHAR(255) NOT NULL, isbn VARCHAR(20) DEFAULT NULL, ano_publicacao INT DEFAULT NULL, preco NUMERIC(10, 2) DEFAULT NULL, created_at DATETIME NOT NULL, updated_at DATETIME DEFAULT NULL, editora_id INT DEFAULT NULL, INDEX IDX_4CB6A6876262BA26 (editora_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci`');
+        $this->addSql('CREATE TABLE livro (id INT AUTO_INCREMENT NOT NULL, titulo VARCHAR(255) NOT NULL, isbn VARCHAR(20) DEFAULT NULL, ano_publicacao INT DEFAULT NULL, edicao INT DEFAULT NULL, preco NUMERIC(10, 2) DEFAULT NULL, created_at DATETIME NOT NULL, updated_at DATETIME DEFAULT NULL, editora_id INT DEFAULT NULL, INDEX IDX_4CB6A6876262BA26 (editora_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci`');
         $this->addSql('CREATE TABLE livro_autor (livro_id INT NOT NULL, autor_id INT NOT NULL, INDEX IDX_67499925864C5AF (livro_id), INDEX IDX_674999214D45BBE (autor_id), PRIMARY KEY(livro_id, autor_id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci`');
         $this->addSql('CREATE TABLE livro_assunto (livro_id INT NOT NULL, assunto_id INT NOT NULL, INDEX IDX_53C2C52A5864C5AF (livro_id), INDEX IDX_53C2C52A4CE74285 (assunto_id), PRIMARY KEY(livro_id, assunto_id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci`');
         $this->addSql('ALTER TABLE livro ADD CONSTRAINT FK_4CB6A6876262BA26 FOREIGN KEY (editora_id) REFERENCES editora (id)');

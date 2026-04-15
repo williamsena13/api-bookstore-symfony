@@ -1,0 +1,76 @@
+{% extends 'admin/layout.html.twig' %}
+{% block title %}Relatórios — {{ livraria.nome ?? 'Bookstore' }}{% endblock %}
+{% block page_title %}Relatórios{% endblock %}
+{% block breadcrumb %}<i class="pi pi-angle-right"></i> Relatórios{% endblock %}
+
+{% block content %}
+<div class="grid">
+    <div class="col-12 md:col-6">
+        <div class="p-card">
+            <div class="p-card-body">
+                <div class="flex align-items-center gap-3 mb-3">
+                    <div class="stat-icon" style="background:#eef2ff;"><i class="pi pi-users" style="color:#6366f1;font-size:1.4rem;"></i></div>
+                    <div>
+                        <div style="font-weight:600;color:var(--text-primary);">Livros por Autor</div>
+                        <div style="font-size:.82rem;color:var(--text-secondary);">Dashboard com gráficos e tabela agrupada por autor</div>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <a href="{{ path('app_relatorio_por_autor') }}" class="p-btn p-btn-primary p-btn-sm"><i class="pi pi-eye"></i> Visualizar</a>
+                    <a href="{{ path('app_relatorio_por_autor_pdf') }}" target="_blank" class="p-btn p-btn-danger p-btn-sm"><i class="pi pi-file-pdf"></i> PDF</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 md:col-6">
+        <div class="p-card">
+            <div class="p-card-body">
+                <div class="flex align-items-center gap-3 mb-3">
+                    <div class="stat-icon" style="background:#dcfce7;"><i class="pi pi-building" style="color:#22c55e;font-size:1.4rem;"></i></div>
+                    <div>
+                        <div style="font-weight:600;color:var(--text-primary);">Livros por Editora</div>
+                        <div style="font-size:.82rem;color:var(--text-secondary);">Dashboard com gráficos e tabela agrupada por editora</div>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <a href="{{ path('app_relatorio_por_editora') }}" class="p-btn p-btn-primary p-btn-sm"><i class="pi pi-eye"></i> Visualizar</a>
+                    <a href="{{ path('app_relatorio_por_editora_pdf') }}" target="_blank" class="p-btn p-btn-danger p-btn-sm"><i class="pi pi-file-pdf"></i> PDF</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 md:col-6">
+        <div class="p-card">
+            <div class="p-card-body">
+                <div class="flex align-items-center gap-3 mb-3">
+                    <div class="stat-icon" style="background:#fee2e2;"><i class="pi pi-tags" style="color:#ef4444;font-size:1.4rem;"></i></div>
+                    <div>
+                        <div style="font-weight:600;color:var(--text-primary);">Livros por Assunto</div>
+                        <div style="font-size:.82rem;color:var(--text-secondary);">Dashboard com gráficos e tabela agrupada por assunto</div>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <a href="{{ path('app_relatorio_por_assunto') }}" class="p-btn p-btn-primary p-btn-sm"><i class="pi pi-eye"></i> Visualizar</a>
+                    <a href="{{ path('app_relatorio_por_assunto_pdf') }}" target="_blank" class="p-btn p-btn-danger p-btn-sm"><i class="pi pi-file-pdf"></i> PDF</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 md:col-6">
+        <div class="p-card">
+            <div class="p-card-body">
+                <div class="flex align-items-center gap-3 mb-3">
+                    <div class="stat-icon" style="background:#fdf4ff;"><i class="pi pi-star" style="color:#a855f7;font-size:1.4rem;"></i></div>
+                    <div>
+                        <div style="font-weight:600;color:var(--text-primary);">Rankings e Estatísticas</div>
+                        <div style="font-size:.82rem;color:var(--text-secondary);">Top autores, editoras, assuntos e livros mais caros</div>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <a href="{{ path('app_relatorio_ranking') }}" class="p-btn p-btn-primary p-btn-sm"><i class="pi pi-eye"></i> Visualizar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

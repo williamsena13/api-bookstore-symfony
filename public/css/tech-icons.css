@@ -1,0 +1,37 @@
+/* Tech Stack Icons */
+
+.tech-icon-php::before {
+    content: '';
+    display: inline-block;
+    width: 2.5rem;
+    height: 2.5rem;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><defs><style>.php-text{font-family:Arial,sans-serif;font-size:100px;font-weight:bold;fill:%23777bb4}</style></defs><text class="php-text" x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">PHP</text></svg>') no-repeat center;
+    background-size: contain;
+}
+
+.tech-icon-symfony::before {
+    content: '';
+    display: inline-block;
+    width: 2.5rem;
+    height: 2.5rem;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><circle cx="128" cy="128" r="104" fill="none" stroke="%2310b981" stroke-width="16"/><circle cx="128" cy="128" r="88" fill="none" stroke="%2310b981" stroke-width="2"/><circle cx="172" cy="128" r="12" fill="%2310b981"/><circle cx="108" cy="128" r="12" fill="%2310b981"/></svg>') no-repeat center;
+    background-size: contain;
+}
+
+.tech-icon-mysql::before {
+    content: '';
+    display: inline-block;
+    width: 2.5rem;
+    height: 2.5rem;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><circle cx="128" cy="128" r="104" fill="none" stroke="%233b82f6" stroke-width="16"/><circle cx="128" cy="128" r="88" fill="none" stroke="%233b82f6" stroke-width="2"/><rect x="120" y="112" width="16" height="16" fill="%233b82f6"/><rect x="152" y="112" width="16" height="16" fill="%233b82f6"/><rect x="120" y="144" width="16" height="16" fill="%233b82f6"/><rect x="152" y="144" width="16" height="16" fill="%233b82f6"/></svg>') no-repeat center;
+    background-size: contain;
+}
+
+.tech-icon-bootstrap::before {
+    content: '';
+    display: inline-block;
+    width: 2.5rem;
+    height: 2.5rem;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><circle cx="128" cy="128" r="104" fill="none" stroke="%236366f1" stroke-width="16"/><circle cx="128" cy="128" r="88" fill="none" stroke="%236366f1" stroke-width="2"/><circle cx="172" cy="128" r="12" fill="%236366f1"/><circle cx="108" cy="128" r="12" fill="%236366f1"/></svg>') no-repeat center;
+    background-size: contain;
+}

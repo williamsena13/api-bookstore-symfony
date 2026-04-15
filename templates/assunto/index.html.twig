@@ -1,118 +1,73 @@
 {% extends 'admin/layout.html.twig' %}
-
-{% block title %}Assuntos — Bookstore{% endblock %}
+{% block title %}Assuntos — {{ livraria.nome ?? 'Bookstore' }}{% endblock %}
+{% block page_title %}Assuntos{% endblock %}
+{% block breadcrumb %}<i class="pi pi-angle-right"></i> Assuntos{% endblock %}
 
 {% block content %}
-<div id="alert-container"></div>
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Assuntos</h2>
-    <button class="btn btn-primary btn-modal" data-url="{{ path('app_assunto_new') }}" data-title="Novo Assunto">
-        <i class="bi bi-plus-lg"></i> Novo Assunto
-    </button>
-</div>
-
-<div class="card border-0 shadow-sm">
-    <div class="table-responsive">
-        <table class="table table-hover mb-0">
-            <thead class="table-light">
-                <tr>
-                    <th>#</th>
-                    <th>Descrição</th>
-                    <th>Criado em</th>
-                    <th class="text-end">Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for assunto in assuntos %}
-                <tr>
-                    <td>{{ assunto.id }}</td>
-                    <td>{{ assunto.descricao }}</td>
-                    <td>{{ assunto.createdAt|date('d/m/Y H:i') }}</td>
-                    <td class="text-end">
-                        <button class="btn btn-sm btn-outline-warning btn-modal" data-url="{{ path('app_assunto_edit', {id: assunto.id}) }}" data-title="Editar Assunto">
-                            <i class="bi bi-pencil"></i>
-                        </button>
-                        <form method="post" action="{{ path('app_assunto_delete', {id: assunto.id}) }}" class="d-inline" onsubmit="return confirm('Tem certeza que deseja excluir?')">
-                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ assunto.id) }}">
-                            <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
-                        </form>
-                    </td>
-                </tr>
-                {% else %}
-                <tr><td colspan="4" class="text-center text-muted py-4">Nenhum assunto cadastrado.</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<!-- Modal -->
-<div class="modal fade" id="crudModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body"></div>
+<div class="p-card">
+    <div class="p-card-header">
+        <h2 class="p-card-title"><i class="pi pi-tag"></i> Assuntos</h2>
+        <div class="d-flex align-items-center gap-2">
+            <span style="font-size:.82rem;color:var(--text-secondary);">{{ paginacao.total }} assuntos</span>
+            <button class="p-btn p-btn-success p-btn-sm btn-modal" data-url="{{ path('app_assunto_new') }}" data-title="Novo Assunto">
+                <i class="pi pi-plus"></i> Novo Assunto
+            </button>
         </div>
     </div>
+
+    <div class="p-card-body" style="padding:0;">
+        <div class="dt-wrapper">
+            <table class="table table-striped table-bordered table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th style="width:60px;">#</th>
+                        <th>Descrição</th>
+                        <th style="width:110px;">Livros</th>
+                        <th style="width:140px;">Criado em</th>
+                        <th style="width:90px;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for assunto in paginacao.items %}
+                    <tr>
+                        <td class="text-muted">{{ assunto.id }}</td>
+                        <td><strong>{{ assunto.descricao }}</strong></td>
+                        <td>
+                            {% if assunto.total_livros > 0 %}
+                                <span class="p-badge p-badge-primary"><i class="pi pi-book"></i> {{ assunto.total_livros }}</span>
+                            {% else %}
+                                <span class="p-badge p-badge-secondary">0</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-muted" style="font-size:.8rem;">{{ assunto.created_at|date('d/m/Y H:i') }}</td>
+                        <td>
+                            <div class="flex gap-1">
+                                <a href="{{ path('app_assunto_edit', {id: assunto.id}) }}" class="p-btn p-btn-warning p-btn-sm" title="Editar">
+                                    <i class="pi pi-pencil"></i>
+                                </a>
+                                <form method="post" action="{{ path('app_assunto_delete', {id: assunto.id}) }}" class="d-inline">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ assunto.id) }}">
+                                    <button type="button" class="p-btn p-btn-danger p-btn-sm btn-delete" data-label='"{{ assunto.descricao }}"' title="Excluir">
+                                        <i class="pi pi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-secondary);">Nenhum assunto cadastrado.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% include 'admin/_pagination.html.twig' %}
 </div>
+
+{% include 'admin/_modals.html.twig' %}
 {% endblock %}
 
 {% block javascripts %}
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const modalEl = document.getElementById('crudModal');
-    const modal = new bootstrap.Modal(modalEl);
-    const modalTitle = modalEl.querySelector('.modal-title');
-    const modalBody = modalEl.querySelector('.modal-body');
-    const alertContainer = document.getElementById('alert-container');
-
-    function showAlert(message, type = 'success') {
-        alertContainer.innerHTML = `
-            <div class="alert alert-${type} alert-dismissible fade show">
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>`;
-    }
-
-    const flashMessage = sessionStorage.getItem('flashMessage');
-    if (flashMessage) {
-        showAlert(flashMessage);
-        sessionStorage.removeItem('flashMessage');
-    }
-
-    function bindForm(url) {
-        modalBody.querySelector('#modal-form').addEventListener('submit', async function (e) {
-            e.preventDefault();
-            const res = await fetch(url, { method: 'POST', body: new FormData(this) });
-            const contentType = res.headers.get('content-type') || '';
-
-            if (contentType.includes('application/json')) {
-                const data = await res.json();
-                modal.hide();
-                sessionStorage.setItem('flashMessage', data.message);
-                location.reload();
-            } else {
-                modalBody.innerHTML = await res.text();
-                bindForm(url);
-            }
-        });
-    }
-
-    document.querySelectorAll('.btn-modal').forEach(btn => {
-        btn.addEventListener('click', async function () {
-            const url = this.dataset.url;
-            modalTitle.textContent = this.dataset.title;
-            modalBody.innerHTML = '<div class="text-center py-4"><div class="spinner-border"></div></div>';
-            modal.show();
-
-            const html = await (await fetch(url)).text();
-            modalBody.innerHTML = html;
-            bindForm(url);
-        });
-    });
-});
-</script>
+<script src="/js/modal-crud.js"></script>
 {% endblock %}
