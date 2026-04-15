@@ -731,6 +731,127 @@ table.dataTable td.text-muted, table.dataTable th.text-muted { color: var(--text
 [data-dark="1"] .dt-header-search { background: var(--card-bg); border-color: var(--border); }
 [data-dark="1"] .dt-header-search input { color: var(--text-primary) !important; }
 
+/* ===== RESPONSIVIDADE MOBILE ===== */
+
+/* Botão hamburguer — oculto no desktop */
+.sidebar-toggle {
+    display: none;
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: none;
+    color: rgba(255,255,255,0.7);
+    align-items: center; justify-content: center;
+    cursor: pointer;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    margin-right: 0.25rem;
+}
+.sidebar-toggle:hover { background: rgba(255,255,255,0.08); }
+
+/* Overlay — oculto por padrão */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 299;
+}
+.sidebar-overlay.open { display: block; }
+
+@media (max-width: 768px) {
+
+    /* Sidebar vira drawer */
+    .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.28s ease;
+        z-index: 300;
+    }
+    .sidebar.open {
+        transform: translateX(0);
+    }
+
+    /* Conteúdo ocupa tela toda */
+    .admin-main {
+        margin-left: 0 !important;
+    }
+
+    /* Mostra hamburguer */
+    .sidebar-toggle {
+        display: flex;
+    }
+
+    /* Topbar compacta */
+    .topbar {
+        padding: 0 0.75rem;
+        gap: 0.5rem;
+    }
+    .topbar-breadcrumb {
+        display: none;
+    }
+    .topbar-title {
+        font-size: 0.88rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .topbar-user-info,
+    .topbar-chevron {
+        display: none;
+    }
+    .topbar-user-btn {
+        padding: 0.25rem;
+        border: none;
+        background: none;
+    }
+
+    /* Conteúdo */
+    .page-content {
+        padding: 0.875rem;
+    }
+
+    /* Card header empilha */
+    .p-card-header {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 0.75rem;
+    }
+    .p-card-header .ms-auto {
+        margin-left: 0 !important;
+        width: 100%;
+    }
+    .p-card-header .d-flex {
+        flex-wrap: wrap;
+        width: 100%;
+        gap: 0.5rem;
+    }
+
+    /* Paginação empilha */
+    .p-card-footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    /* Tabela scroll horizontal */
+    .dt-wrapper {
+        padding: 0.5rem;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Stat cards */
+    .stat-value { font-size: 1.35rem; }
+    .stat-card { padding: 1rem; }
+
+    /* Grid cols viram 100% */
+    .md\:col-4, .md\:col-6, .md\:col-8,
+    .lg\:col-4, .lg\:col-5, .lg\:col-6,
+    .lg\:col-7, .lg\:col-8 {
+        width: 100% !important;
+    }
+}
+
 /* ===== PRINT ===== */
 @media print {
     .sidebar, .topbar, .no-print, .dt-top, .dt-bottom { display: none !important; }

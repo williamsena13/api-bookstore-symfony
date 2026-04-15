@@ -1,6 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
 <div class="admin-wrapper" id="adminWrapper">
 
     {# SIDEBAR #}
@@ -18,6 +19,9 @@
         <nav class="sidebar-nav">
             <a href="{{ path('app_admin_dashboard') }}" class="sidebar-link {{ app.request.get('_route') == 'app_admin_dashboard' ? 'active' : '' }}">
                 <i class="pi pi-home"></i> Dashboard
+            </a>
+            <a href="{{ path('app_home') }}" class="sidebar-link" target="_blank">
+                <i class="pi pi-external-link"></i> Ver site
             </a>
 
             <div class="sidebar-section">Cadastros</div>
@@ -52,6 +56,12 @@
             </a>
 
             <div class="sidebar-section">Administração</div>
+            <a href="{{ path('app_import_index') }}" class="sidebar-link {{ app.request.get('_route') starts with 'app_import' ? 'active' : '' }}">
+                <i class="pi pi-cloud-download"></i> Importar Livros
+            </a>
+            <a href="{{ path('app_import_historico') }}" class="sidebar-link {{ app.request.get('_route') == 'app_import_historico' or app.request.get('_route') == 'app_import_detalhe' ? 'active' : '' }}">
+                <i class="pi pi-history"></i> Histórico Import.
+            </a>
             <a href="{{ path('app_user_index') }}" class="sidebar-link {{ app.request.get('_route') starts with 'app_user' ? 'active' : '' }}">
                 <i class="pi pi-users"></i> Usuários
             </a>
@@ -64,6 +74,9 @@
     {# MAIN #}
     <main class="admin-main">
         <header class="topbar">
+            <button class="sidebar-toggle" id="sidebarToggle" title="Menu">
+                <i class="pi pi-align-justify"></i>
+            </button>
             <div class="topbar-breadcrumb">
                 <a href="{{ path('app_admin_dashboard') }}">Dashboard</a>
                 {% block breadcrumb %}{% endblock %}
@@ -140,6 +153,30 @@
 <script src="/js/admin-theme.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    // Sidebar toggle mobile
+    var toggle = document.getElementById('sidebarToggle');
+    var sidebar = document.getElementById('adminSidebar');
+    var overlay = document.getElementById('sidebarOverlay');
+    function closeSidebar() {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('open');
+    }
+    if (toggle) {
+        toggle.addEventListener('click', function () {
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('open');
+        });
+    }
+    if (overlay) {
+        overlay.addEventListener('click', closeSidebar);
+    }
+    // Fechar sidebar ao clicar em link no mobile
+    document.querySelectorAll('.sidebar-link').forEach(function (link) {
+        link.addEventListener('click', function () {
+            if (window.innerWidth <= 768) closeSidebar();
+        });
+    });
+
     // User dropdown
     var btn = document.getElementById('userDropdownBtn');
     var menu = document.getElementById('userDropdownMenu');
