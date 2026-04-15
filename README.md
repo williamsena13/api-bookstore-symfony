@@ -1,16 +1,22 @@
-# 📚 Bookstore — Sistema de Gerenciamento de Livros
+# Bookstore — Sistema de Gerenciamento de Livros
 
 Sistema MVP para gerenciamento de livros desenvolvido com Symfony 6.4, incluindo CRUD completo, relatórios com VIEWs SQL e PDF, dashboard com gráficos, sistema de temas customizável e painel administrativo protegido por autenticação.
 
-## 🔗 Repositório
+## Repositório
 
 [https://github.com/williamsena13/api-bookstore-symfony](https://github.com/williamsena13/api-bookstore-symfony)
 
-## ✍️ Autor
+## Demo em Produção
+
+- URL: [https://library.bassena.com.br](https://library.bassena.com.br)
+- E-mail: `admin@admin.com.br`
+- Senha: `admin`
+
+## Autor
 
 **William B. Sena**
 
-## 🛠️ Tecnologias
+## Tecnologias
 
 ### Backend
 - PHP >= 8.1
@@ -34,7 +40,7 @@ Sistema MVP para gerenciamento de livros desenvolvido com Symfony 6.4, incluindo
 - MySQL 8.0
 - VIEWs SQL para relatórios
 
-## 📦 Funcionalidades
+## Funcionalidades
 
 ### Cadastros (CRUD)
 - **Livros** — título, ISBN, edição, ano, preço, editora (ManyToOne), autores e assuntos (ManyToMany)
@@ -95,7 +101,7 @@ Sistema MVP para gerenciamento de livros desenvolvido com Symfony 6.4, incluindo
 - Seção de mapa (quando coordenadas configuradas)
 - Página de tecnologias utilizadas
 
-## 🗄️ Estrutura do Banco de Dados
+## Estrutura do Banco de Dados
 
 | Tabela | Descrição |
 |---|---|
@@ -115,7 +121,9 @@ Sistema MVP para gerenciamento de livros desenvolvido com Symfony 6.4, incluindo
 | `vw_relatorio_livros_por_editora` | Livros agrupados por editora |
 | `vw_relatorio_livros_por_assunto` | Livros agrupados por assunto |
 
-## ⚙️ Instalação
+---
+
+## Instalação Local
 
 ### Pré-requisitos
 
@@ -137,10 +145,12 @@ composer install
 cp .env .env.local
 ```
 
-Edite o `.env.local` com a URL do seu banco de dados:
+Edite o `.env.local`:
 
 ```env
-DATABASE_URL="mysql://usuario:senha@127.0.0.1:3306/bookstore?serverVersion=8.0"
+APP_ENV=dev
+APP_SECRET=qualquer_chave_aleatoria
+DATABASE_URL="mysql://root:@127.0.0.1:3306/bookstore?serverVersion=8.0&charset=utf8mb4"
 ```
 
 ```bash
@@ -153,27 +163,44 @@ php bin/console doctrine:migrations:migrate --no-interaction
 # 6. Criar usuário admin
 php bin/console app:create-admin
 
-# 7. Criar pasta de uploads
-mkdir -p public/uploads/livraria public/uploads/usuarios
-
-# 8. Limpar cache
+# 7. Limpar cache
 php bin/console cache:clear
 
-# 9. Iniciar servidor de desenvolvimento
+# 8. Iniciar servidor
 symfony server:start
 # ou
 php -S localhost:8000 -t public/
 ```
 
-### Acesso
+### Acesso local
 
-- **URL**: http://localhost:8000
-- **Landing page**: http://localhost:8000/
-- **Login**: http://localhost:8000/login
-- **E-mail**: `admin@admin.com.br`
-- **Senha**: `admin`
+- URL: http://localhost:8000
+- E-mail: `admin@admin.com.br`
+- Senha: `admin`
 
-## 📁 Estrutura do Projeto
+---
+
+## Criação de Usuários
+
+### Via comando (recomendado para o primeiro admin)
+
+```bash
+php bin/console app:create-admin
+```
+
+Cria o usuário `admin@admin.com.br` com senha `admin` e role `ROLE_ADMIN`.
+
+### Via painel administrativo
+
+Acesse **Usuários** no menu lateral. É possível criar usuários com os perfis:
+- **Admin** — acesso total ao painel
+- **Usuário** — acesso restrito (somente leitura)
+
+> Apenas administradores podem criar, editar e excluir usuários.
+
+---
+
+## Estrutura do Projeto
 
 ```
 src/
@@ -234,7 +261,7 @@ public/
     └── viacep.js
 ```
 
-## 🏗️ Arquitetura
+## Arquitetura
 
 - **MVC** — Controller → Service → Repository → Entity
 - **DRY** — `TimestampTrait` para campos `createdAt`/`updatedAt`
@@ -243,6 +270,6 @@ public/
 - **CSS Variables** — `_theme_css.html.twig` injeta cores do banco como variáveis CSS
 - **Error Handling** — Try/catch específicos para UniqueConstraint, ForeignKey e Throwable
 
-## 📄 Licença
+## Licença
 
 Proprietário — Todos os direitos reservados.
