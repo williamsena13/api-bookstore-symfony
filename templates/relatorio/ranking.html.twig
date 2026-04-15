@@ -1,98 +1,135 @@
 {% extends 'admin/layout.html.twig' %}
 {% block title %}Rankings — {{ livraria.nome ?? 'Bookstore' }}{% endblock %}
+{% block page_title %}Rankings e Estatísticas{% endblock %}
+{% block breadcrumb %}<i class="pi pi-angle-right"></i> <a href="{{ path('app_relatorio_index') }}">Relatórios</a> <i class="pi pi-angle-right"></i> Rankings{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Rankings e Estatísticas</h2>
-    <div class="d-flex gap-2">
-        <button onclick="window.print()" class="btn btn-outline-secondary btn-sm no-print"><i class="bi bi-printer"></i> Imprimir</button>
-        <a href="{{ path('app_relatorio_index') }}" class="btn btn-outline-primary btn-sm no-print"><i class="bi bi-arrow-left"></i> Voltar</a>
+
+<div class="flex align-items-center justify-content-between mb-4 no-print flex-wrap gap-2">
+    <div class="flex gap-2">
+        <button onclick="exportCSV()" class="p-btn p-btn-success p-btn-sm"><i class="pi pi-download"></i> Exportar CSV</button>
+        <button onclick="window.print()" class="p-btn p-btn-secondary p-btn-sm"><i class="pi pi-print"></i> Imprimir</button>
+    </div>
+    <a href="{{ path('app_relatorio_index') }}" class="p-btn p-btn-secondary p-btn-sm"><i class="pi pi-arrow-left"></i> Voltar</a>
+</div>
+
+{# GRÁFICOS — LINHA 1 #}
+<div class="grid mb-4">
+    <div class="col-12 lg:col-6">
+        <div class="chart-card">
+            <div class="chart-card-title"><i class="pi pi-user" style="color:#6366f1;"></i> Top Autores por Livros</div>
+            <div class="chart-card-subtitle">Autores com maior número de títulos cadastrados</div>
+            <div class="chart-container" style="height:280px;"><canvas id="chartAutores"></canvas></div>
+        </div>
+    </div>
+    <div class="col-12 lg:col-6">
+        <div class="chart-card">
+            <div class="chart-card-title"><i class="pi pi-building" style="color:#22c55e;"></i> Top Editoras por Livros</div>
+            <div class="chart-card-subtitle">Editoras com maior participação no acervo</div>
+            <div class="chart-container" style="height:280px;"><canvas id="chartEditoras"></canvas></div>
+        </div>
     </div>
 </div>
 
-<div class="row g-4">
-    <div class="col-md-6">
-        <div class="card border-0 shadow-sm">
-            <div class="card-header bg-primary text-white"><i class="bi bi-person"></i> Top Autores (mais livros)</div>
-            <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead class="table-light"><tr><th>#</th><th>Autor</th><th>Livros</th></tr></thead>
+{# GRÁFICOS — LINHA 2 #}
+<div class="grid mb-4">
+    <div class="col-12 lg:col-7">
+        <div class="chart-card">
+            <div class="chart-card-title"><i class="pi pi-dollar" style="color:#f59e0b;"></i> Livros Mais Caros</div>
+            <div class="chart-card-subtitle">Ranking de preço dos títulos cadastrados</div>
+            <div class="chart-container" style="height:260px;"><canvas id="chartPrecos"></canvas></div>
+        </div>
+    </div>
+    <div class="col-12 lg:col-5">
+        <div class="chart-card">
+            <div class="chart-card-title"><i class="pi pi-tag" style="color:#ef4444;"></i> Top Assuntos</div>
+            <div class="chart-card-subtitle">Categorias com mais títulos</div>
+            <div class="chart-container" style="height:260px;"><canvas id="chartAssuntos"></canvas></div>
+        </div>
+    </div>
+</div>
+
+{# TABELAS #}
+<div class="grid">
+    <div class="col-12 lg:col-6">
+        <div class="p-card">
+            <div class="p-card-header"><h3 class="p-card-title"><i class="pi pi-user" style="color:#6366f1;"></i> Top Autores</h3></div>
+            <div class="p-card-body" style="padding:0;">
+                <table class="p-datatable w-full" data-sortable="[0,1,2]">
+                    <thead><tr><th>#</th><th>Autor</th><th>Livros</th></tr></thead>
                     <tbody>
                         {% for i, r in autorMaisLivros %}
                         <tr>
-                            <td><span class="badge {{ i < 3 ? 'bg-warning text-dark' : 'bg-secondary' }}">{{ i + 1 }}º</span></td>
+                            <td><span class="p-badge {{ i < 3 ? 'p-badge-warning' : 'p-badge-secondary' }}">{{ i + 1 }}º</span></td>
                             <td><strong>{{ r.nome }}</strong></td>
                             <td>{{ r.total }}</td>
                         </tr>
                         {% else %}
-                        <tr><td colspan="3" class="text-center text-muted">Nenhum dado.</td></tr>
+                        <tr><td colspan="3" class="text-center" style="padding:2rem;color:var(--text-secondary);">Nenhum dado.</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-
-    <div class="col-md-6">
-        <div class="card border-0 shadow-sm">
-            <div class="card-header bg-success text-white"><i class="bi bi-building"></i> Top Editoras (mais livros)</div>
-            <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead class="table-light"><tr><th>#</th><th>Editora</th><th>Livros</th></tr></thead>
+    <div class="col-12 lg:col-6">
+        <div class="p-card">
+            <div class="p-card-header"><h3 class="p-card-title"><i class="pi pi-building" style="color:#22c55e;"></i> Top Editoras</h3></div>
+            <div class="p-card-body" style="padding:0;">
+                <table class="p-datatable w-full" data-sortable="[0,1,2]">
+                    <thead><tr><th>#</th><th>Editora</th><th>Livros</th></tr></thead>
                     <tbody>
                         {% for i, r in editoraMaisLivros %}
                         <tr>
-                            <td><span class="badge {{ i < 3 ? 'bg-warning text-dark' : 'bg-secondary' }}">{{ i + 1 }}º</span></td>
+                            <td><span class="p-badge {{ i < 3 ? 'p-badge-warning' : 'p-badge-secondary' }}">{{ i + 1 }}º</span></td>
                             <td><strong>{{ r.nome }}</strong></td>
                             <td>{{ r.total }}</td>
                         </tr>
                         {% else %}
-                        <tr><td colspan="3" class="text-center text-muted">Nenhum dado.</td></tr>
+                        <tr><td colspan="3" class="text-center" style="padding:2rem;color:var(--text-secondary);">Nenhum dado.</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-
-    <div class="col-md-6">
-        <div class="card border-0 shadow-sm">
-            <div class="card-header text-white" style="background:#E65100;"><i class="bi bi-currency-dollar"></i> Livros mais caros</div>
-            <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead class="table-light"><tr><th>#</th><th>Título</th><th>Editora</th><th>Preço</th></tr></thead>
+    <div class="col-12 lg:col-6">
+        <div class="p-card">
+            <div class="p-card-header"><h3 class="p-card-title"><i class="pi pi-dollar" style="color:#f59e0b;"></i> Livros Mais Caros</h3></div>
+            <div class="p-card-body" style="padding:0;">
+                <table class="p-datatable w-full" data-sortable="[0,1,2,3]">
+                    <thead><tr><th>#</th><th>Título</th><th>Editora</th><th>Preço</th></tr></thead>
                     <tbody>
                         {% for i, r in livroMaisCaro %}
                         <tr>
-                            <td><span class="badge {{ i < 3 ? 'bg-warning text-dark' : 'bg-secondary' }}">{{ i + 1 }}º</span></td>
+                            <td><span class="p-badge {{ i < 3 ? 'p-badge-warning' : 'p-badge-secondary' }}">{{ i + 1 }}º</span></td>
                             <td><strong>{{ r.titulo }}</strong></td>
                             <td>{{ r.editora ?? '—' }}</td>
-                            <td class="text-success fw-bold">R$ {{ r.preco|number_format(2, ',', '.') }}</td>
+                            <td><span style="color:var(--success);font-weight:600;">R$ {{ r.preco|number_format(2, ',', '.') }}</span></td>
                         </tr>
                         {% else %}
-                        <tr><td colspan="4" class="text-center text-muted">Nenhum dado.</td></tr>
+                        <tr><td colspan="4" class="text-center" style="padding:2rem;color:var(--text-secondary);">Nenhum dado.</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-
-    <div class="col-md-6">
-        <div class="card border-0 shadow-sm">
-            <div class="card-header bg-info text-white"><i class="bi bi-tags"></i> Top Assuntos</div>
-            <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead class="table-light"><tr><th>#</th><th>Assunto</th><th>Livros</th></tr></thead>
+    <div class="col-12 lg:col-6">
+        <div class="p-card">
+            <div class="p-card-header"><h3 class="p-card-title"><i class="pi pi-tag" style="color:#ef4444;"></i> Top Assuntos</h3></div>
+            <div class="p-card-body" style="padding:0;">
+                <table class="p-datatable w-full" data-sortable="[0,1,2]">
+                    <thead><tr><th>#</th><th>Assunto</th><th>Livros</th></tr></thead>
                     <tbody>
                         {% for i, r in assuntoMaisLivros %}
                         <tr>
-                            <td><span class="badge {{ i < 3 ? 'bg-warning text-dark' : 'bg-secondary' }}">{{ i + 1 }}º</span></td>
+                            <td><span class="p-badge {{ i < 3 ? 'p-badge-warning' : 'p-badge-secondary' }}">{{ i + 1 }}º</span></td>
                             <td><strong>{{ r.descricao }}</strong></td>
                             <td>{{ r.total }}</td>
                         </tr>
                         {% else %}
-                        <tr><td colspan="3" class="text-center text-muted">Nenhum dado.</td></tr>
+                        <tr><td colspan="3" class="text-center" style="padding:2rem;color:var(--text-secondary);">Nenhum dado.</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -100,4 +137,72 @@
         </div>
     </div>
 </div>
+
+{% endblock %}
+
+{% block javascripts %}
+<script src="/js/datatable.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const palette = ['#6366f1','#22c55e','#f59e0b','#ef4444','#06b6d4','#a855f7','#f97316','#14b8a6','#ec4899','#84cc16'];
+    const gridColor = 'rgba(0,0,0,0.05)';
+
+    new Chart(document.getElementById('chartAutores'), {
+        type: 'bar',
+        data: {
+            labels: {{ autorMaisLivros|map(r => r.nome)|json_encode|raw }},
+            datasets: [{ label: 'Livros', data: {{ autorMaisLivros|map(r => r.total)|json_encode|raw }}, backgroundColor: palette.map(c => c + '33'), borderColor: palette, borderWidth: 2, borderRadius: 6 }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: gridColor } }, x: { grid: { display: false } } } }
+    });
+
+    new Chart(document.getElementById('chartEditoras'), {
+        type: 'doughnut',
+        data: {
+            labels: {{ editoraMaisLivros|map(r => r.nome)|json_encode|raw }},
+            datasets: [{ data: {{ editoraMaisLivros|map(r => r.total)|json_encode|raw }}, backgroundColor: palette, borderWidth: 0, hoverOffset: 8 }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, cutout: '55%', plugins: { legend: { position: 'bottom', labels: { padding: 10, boxWidth: 12, font: { size: 11 } } } } }
+    });
+
+    new Chart(document.getElementById('chartPrecos'), {
+        type: 'bar',
+        data: {
+            labels: {{ livroMaisCaro|map(r => r.titulo)|json_encode|raw }}.map(t => t.length > 18 ? t.substring(0,18)+'…' : t),
+            datasets: [{ label: 'Preço (R$)', data: {{ livroMaisCaro|map(r => r.preco)|json_encode|raw }}, backgroundColor: '#f59e0b22', borderColor: '#f59e0b', borderWidth: 2, borderRadius: 6 }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' R$ ' + parseFloat(ctx.parsed.y).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) } } },
+            scales: { y: { beginAtZero: true, grid: { color: gridColor }, ticks: { callback: v => 'R$ ' + v } }, x: { grid: { display: false } } }
+        }
+    });
+
+    new Chart(document.getElementById('chartAssuntos'), {
+        type: 'polarArea',
+        data: {
+            labels: {{ assuntoMaisLivros|map(r => r.descricao)|json_encode|raw }},
+            datasets: [{ data: {{ assuntoMaisLivros|map(r => r.total)|json_encode|raw }}, backgroundColor: palette.map(c => c + 'bb'), borderWidth: 0 }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { padding: 8, boxWidth: 12, font: { size: 11 } } } }, scales: { r: { ticks: { display: false }, grid: { color: gridColor } } } }
+    });
+});
+
+function exportCSV() {
+    const sections = [
+        { title: 'Top Autores', headers: ['#','Autor','Livros'], rows: [{% for i, r in autorMaisLivros %}[{{ i+1 }},'{{ r.nome|replace({"'": "'"}) }}',{{ r.total }}],{% endfor %}] },
+        { title: 'Top Editoras', headers: ['#','Editora','Livros'], rows: [{% for i, r in editoraMaisLivros %}[{{ i+1 }},'{{ r.nome|replace({"'": "'"}) }}',{{ r.total }}],{% endfor %}] },
+        { title: 'Livros Mais Caros', headers: ['#','Título','Editora','Preço'], rows: [{% for i, r in livroMaisCaro %}[{{ i+1 }},'{{ r.titulo|replace({"'": "'"}) }}','{{ (r.editora ?? '')|replace({"'": "'"}) }}',{{ r.preco }}],{% endfor %}] },
+        { title: 'Top Assuntos', headers: ['#','Assunto','Livros'], rows: [{% for i, r in assuntoMaisLivros %}[{{ i+1 }},'{{ r.descricao|replace({"'": "'"}) }}',{{ r.total }}],{% endfor %}] },
+    ];
+    let csv = '';
+    sections.forEach(s => {
+        csv += s.title + '\n';
+        csv += s.headers.map(h => '"' + h + '"').join(',') + '\n';
+        s.rows.forEach(r => { csv += r.map(v => '"' + String(v).replace(/"/g, '""') + '"').join(',') + '\n'; });
+        csv += '\n';
+    });
+    const a = document.createElement('a'); a.href = 'data:text/csv;charset=utf-8,\uFEFF' + encodeURIComponent(csv); a.download = 'rankings.csv'; a.click();
+}
+</script>
 {% endblock %}

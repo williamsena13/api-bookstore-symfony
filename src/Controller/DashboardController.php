@@ -23,11 +23,26 @@ class DashboardController extends AbstractController
         UserRepository $userRepository,
     ): Response {
         return $this->render('admin/dashboard.html.twig', [
-            'totalLivros' => $livroRepository->count([]),
-            'totalAutores' => $autorRepository->count([]),
-            'totalEditoras' => $editoraRepository->count([]),
-            'totalAssuntos' => $assuntoRepository->count([]),
-            'totalUsuarios' => $userRepository->count([]),
+            'totalLivros'    => $livroRepository->count([]),
+            'totalAutores'   => $autorRepository->count([]),
+            'totalEditoras'  => $editoraRepository->count([]),
+            'totalAssuntos'  => $assuntoRepository->count([]),
+            'totalUsuarios'  => $userRepository->count([]),
+
+            // Gráfico: top 8 autores por livros
+            'topAutores'     => $autorRepository->findTopAuthorsByBooks(8),
+
+            // Gráfico: top 6 editoras por livros
+            'topEditoras'    => $editoraRepository->findTopPublishersByBooks(6),
+
+            // Gráfico: top 8 assuntos por livros
+            'topAssuntos'    => $assuntoRepository->findTopSubjectsByBooks(8),
+
+            // Gráfico: top 8 livros mais caros
+            'livrosMaisCaros' => $livroRepository->findMostExpensive(8),
+
+            // Gráfico: distribuição de livros por editora (todos)
+            'livrosPorEditora' => $editoraRepository->findTopPublishersByBooks(10),
         ]);
     }
 }

@@ -1,114 +1,322 @@
 {% extends 'admin/layout.html.twig' %}
 
 {% block title %}Dashboard — {{ livraria.nome ?? 'Bookstore' }}{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
 
 {% block content %}
-<div class="mb-4">
-    <h2>Bem-vindo ao {{ livraria.nome ?? 'Bookstore' }}</h2>
-    {% if livraria.descricao %}
-        <p class="text-muted">{{ livraria.descricao }}</p>
-    {% endif %}
-</div>
 
-{% if livraria.telefone or livraria.email or livraria.cep %}
-<div class="card border-0 shadow-sm mb-4">
-    <div class="card-body d-flex flex-wrap gap-4">
-        {% if livraria.telefone %}
-            <span class="text-muted"><i class="bi bi-telephone"></i> {{ livraria.telefone }}</span>
-        {% endif %}
-        {% if livraria.email %}
-            <span class="text-muted"><i class="bi bi-envelope"></i> {{ livraria.email }}</span>
-        {% endif %}
-        {% if livraria.cep %}
-            <span class="text-muted"><i class="bi bi-geo-alt"></i> {{ livraria.enderecoCompleto }}</span>
-        {% endif %}
+{# INFO DA LIVRARIA #}
+{% if livraria.nome %}
+<div class="p-card mb-4" style="background:linear-gradient(135deg,#6366f1,#4f46e5);border:none;">
+    <div class="p-card-body" style="padding:1.25rem 1.5rem;">
+        <div class="flex align-items-center justify-content-between flex-wrap gap-3">
+            <div>
+                <div style="color:rgba(255,255,255,0.7);font-size:.8rem;text-transform:uppercase;letter-spacing:1px;">Sistema</div>
+                <div style="color:#fff;font-size:1.4rem;font-weight:700;">{{ livraria.nome }}</div>
+                {% if livraria.descricao %}<div style="color:rgba(255,255,255,0.75);font-size:.875rem;margin-top:.25rem;">{{ livraria.descricao }}</div>{% endif %}
+            </div>
+            <div class="flex gap-4 flex-wrap">
+                {% if livraria.telefone %}<span style="color:rgba(255,255,255,0.85);font-size:.85rem;"><i class="pi pi-phone"></i> {{ livraria.telefone }}</span>{% endif %}
+                {% if livraria.email %}<span style="color:rgba(255,255,255,0.85);font-size:.85rem;"><i class="pi pi-envelope"></i> {{ livraria.email }}</span>{% endif %}
+                {% if livraria.cidade %}<span style="color:rgba(255,255,255,0.85);font-size:.85rem;"><i class="pi pi-map-marker"></i> {{ livraria.cidade }}{% if livraria.uf %}/{{ livraria.uf }}{% endif %}</span>{% endif %}
+            </div>
+        </div>
     </div>
 </div>
 {% endif %}
 
-<div class="row g-4">
-    <div class="col-md-4">
-        <div class="card border-0 shadow-sm">
-            <div class="card-body d-flex align-items-center">
-                <div class="bg-info bg-opacity-10 rounded-3 p-3 me-3">
-                    <i class="bi bi-journal-text fs-2 text-info"></i>
-                </div>
-                <div>
-                    <h3 class="mb-0">{{ totalLivros }}</h3>
-                    <small class="text-muted">Livros</small>
-                </div>
-                <a href="{{ path('app_livro_index') }}" class="ms-auto btn btn-sm btn-outline-info">Ver</a>
+{# STAT CARDS #}
+<div class="grid mb-4">
+    <div class="col-12 md:col-6 lg:col-2">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#eef2ff;"><i class="pi pi-book" style="color:#6366f1;font-size:1.4rem;"></i></div>
+            <div>
+                <div class="stat-value">{{ totalLivros }}</div>
+                <div class="stat-label">Livros</div>
+            </div>
+            <a href="{{ path('app_livro_index') }}" class="stat-link"><i class="pi pi-arrow-right"></i></a>
+        </div>
+    </div>
+    <div class="col-12 md:col-6 lg:col-2">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#fef3c7;"><i class="pi pi-user" style="color:#f59e0b;font-size:1.4rem;"></i></div>
+            <div>
+                <div class="stat-value">{{ totalAutores }}</div>
+                <div class="stat-label">Autores</div>
+            </div>
+            <a href="{{ path('app_autor_index') }}" class="stat-link"><i class="pi pi-arrow-right"></i></a>
+        </div>
+    </div>
+    <div class="col-12 md:col-6 lg:col-2">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#dcfce7;"><i class="pi pi-building" style="color:#22c55e;font-size:1.4rem;"></i></div>
+            <div>
+                <div class="stat-value">{{ totalEditoras }}</div>
+                <div class="stat-label">Editoras</div>
+            </div>
+            <a href="{{ path('app_editora_index') }}" class="stat-link"><i class="pi pi-arrow-right"></i></a>
+        </div>
+    </div>
+    <div class="col-12 md:col-6 lg:col-2">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#fee2e2;"><i class="pi pi-tag" style="color:#ef4444;font-size:1.4rem;"></i></div>
+            <div>
+                <div class="stat-value">{{ totalAssuntos }}</div>
+                <div class="stat-label">Assuntos</div>
+            </div>
+            <a href="{{ path('app_assunto_index') }}" class="stat-link"><i class="pi pi-arrow-right"></i></a>
+        </div>
+    </div>
+    <div class="col-12 md:col-6 lg:col-2">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#f0fdf4;"><i class="pi pi-users" style="color:#06b6d4;font-size:1.4rem;"></i></div>
+            <div>
+                <div class="stat-value">{{ totalUsuarios }}</div>
+                <div class="stat-label">Usuários</div>
+            </div>
+            <a href="{{ path('app_user_index') }}" class="stat-link"><i class="pi pi-arrow-right"></i></a>
+        </div>
+    </div>
+    <div class="col-12 md:col-6 lg:col-2">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#fdf4ff;"><i class="pi pi-chart-bar" style="color:#a855f7;font-size:1.4rem;"></i></div>
+            <div>
+                <div class="stat-value" style="font-size:1rem;padding-top:.25rem;">Relatórios</div>
+                <div class="stat-label">Ver análises</div>
+            </div>
+            <a href="{{ path('app_relatorio_index') }}" class="stat-link"><i class="pi pi-arrow-right"></i></a>
+        </div>
+    </div>
+</div>
+
+{# GRÁFICOS — LINHA 1 #}
+<div class="grid mb-4">
+    <div class="col-12 lg:col-8">
+        <div class="chart-card" style="height:100%;">
+            <div class="chart-card-title"><i class="pi pi-user" style="color:#f59e0b;"></i> Top Autores por Número de Livros</div>
+            <div class="chart-card-subtitle">Os autores com maior acervo cadastrado no sistema</div>
+            <div class="chart-container" style="height:280px;">
+                <canvas id="chartAutores"></canvas>
             </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card border-0 shadow-sm">
-            <div class="card-body d-flex align-items-center">
-                <div class="bg-warning bg-opacity-10 rounded-3 p-3 me-3">
-                    <i class="bi bi-person fs-2 text-warning"></i>
-                </div>
-                <div>
-                    <h3 class="mb-0">{{ totalAutores }}</h3>
-                    <small class="text-muted">Autores</small>
-                </div>
-                <a href="{{ path('app_autor_index') }}" class="ms-auto btn btn-sm btn-outline-warning">Ver</a>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card border-0 shadow-sm">
-            <div class="card-body d-flex align-items-center">
-                <div class="bg-success bg-opacity-10 rounded-3 p-3 me-3">
-                    <i class="bi bi-building fs-2 text-success"></i>
-                </div>
-                <div>
-                    <h3 class="mb-0">{{ totalEditoras }}</h3>
-                    <small class="text-muted">Editoras</small>
-                </div>
-                <a href="{{ path('app_editora_index') }}" class="ms-auto btn btn-sm btn-outline-success">Ver</a>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card border-0 shadow-sm">
-            <div class="card-body d-flex align-items-center">
-                <div class="bg-primary bg-opacity-10 rounded-3 p-3 me-3">
-                    <i class="bi bi-tags fs-2 text-primary"></i>
-                </div>
-                <div>
-                    <h3 class="mb-0">{{ totalAssuntos }}</h3>
-                    <small class="text-muted">Assuntos</small>
-                </div>
-                <a href="{{ path('app_assunto_index') }}" class="ms-auto btn btn-sm btn-outline-primary">Ver</a>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card border-0 shadow-sm">
-            <div class="card-body d-flex align-items-center">
-                <div class="bg-secondary bg-opacity-10 rounded-3 p-3 me-3">
-                    <i class="bi bi-people fs-2 text-secondary"></i>
-                </div>
-                <div>
-                    <h3 class="mb-0">{{ totalUsuarios }}</h3>
-                    <small class="text-muted">Usuários</small>
-                </div>
-                <a href="{{ path('app_user_index') }}" class="ms-auto btn btn-sm btn-outline-secondary">Ver</a>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card border-0 shadow-sm">
-            <div class="card-body d-flex align-items-center">
-                <div class="bg-danger bg-opacity-10 rounded-3 p-3 me-3">
-                    <i class="bi bi-bar-chart fs-2 text-danger"></i>
-                </div>
-                <div>
-                    <small class="text-muted">Relatórios</small>
-                </div>
-                <a href="{{ path('app_relatorio_index') }}" class="ms-auto btn btn-sm btn-outline-danger">Acessar</a>
+    <div class="col-12 lg:col-4">
+        <div class="chart-card" style="height:100%;">
+            <div class="chart-card-title"><i class="pi pi-building" style="color:#22c55e;"></i> Livros por Editora</div>
+            <div class="chart-card-subtitle">Distribuição do acervo entre editoras</div>
+            <div class="chart-container" style="height:280px;">
+                <canvas id="chartEditoras"></canvas>
             </div>
         </div>
     </div>
 </div>
+
+{# GRÁFICOS — LINHA 2 #}
+<div class="grid mb-4">
+    <div class="col-12 lg:col-5">
+        <div class="chart-card">
+            <div class="chart-card-title"><i class="pi pi-tag" style="color:#ef4444;"></i> Livros por Assunto</div>
+            <div class="chart-card-subtitle">Categorias com mais títulos cadastrados</div>
+            <div class="chart-container" style="height:260px;">
+                <canvas id="chartAssuntos"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 lg:col-7">
+        <div class="chart-card">
+            <div class="chart-card-title"><i class="pi pi-dollar" style="color:#6366f1;"></i> Livros Mais Caros</div>
+            <div class="chart-card-subtitle">Ranking de preço dos títulos cadastrados</div>
+            <div class="chart-container" style="height:260px;">
+                <canvas id="chartPrecos"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# GRÁFICO — LINHA 3 #}
+<div class="grid">
+    <div class="col-12">
+        <div class="chart-card">
+            <div class="chart-card-title"><i class="pi pi-chart-line" style="color:#06b6d4;"></i> Visão Geral do Acervo</div>
+            <div class="chart-card-subtitle">Comparativo entre módulos do sistema</div>
+            <div class="chart-container" style="height:200px;">
+                <canvas id="chartGeral"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const palette = ['#6366f1','#22c55e','#f59e0b','#ef4444','#06b6d4','#a855f7','#f97316','#14b8a6','#ec4899','#84cc16'];
+    const gridColor = 'rgba(0,0,0,0.05)';
+    const fontColor = '#64748b';
+
+    Chart.defaults.font.family = "'Inter', system-ui, sans-serif";
+    Chart.defaults.font.size = 12;
+    Chart.defaults.color = fontColor;
+
+    // ===== AUTORES (Bar horizontal) =====
+    const autores = {{ topAutores|map(r => r.nome)|json_encode|raw }};
+    const autoresTotal = {{ topAutores|map(r => r.total)|json_encode|raw }};
+
+    new Chart(document.getElementById('chartAutores'), {
+        type: 'bar',
+        data: {
+            labels: autores,
+            datasets: [{
+                label: 'Livros',
+                data: autoresTotal,
+                backgroundColor: palette.map(c => c + '22'),
+                borderColor: palette,
+                borderWidth: 2,
+                borderRadius: 6,
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: ctx => ' ' + ctx.parsed.x + ' livro' + (ctx.parsed.x !== 1 ? 's' : '')
+                    }
+                }
+            },
+            scales: {
+                x: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: gridColor } },
+                y: { grid: { display: false } }
+            }
+        }
+    });
+
+    // ===== EDITORAS (Doughnut) =====
+    const editoras = {{ topEditoras|map(r => r.nome)|json_encode|raw }};
+    const editorasTotal = {{ topEditoras|map(r => r.total)|json_encode|raw }};
+
+    new Chart(document.getElementById('chartEditoras'), {
+        type: 'doughnut',
+        data: {
+            labels: editoras,
+            datasets: [{
+                data: editorasTotal,
+                backgroundColor: palette,
+                borderWidth: 0,
+                hoverOffset: 8,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '60%',
+            plugins: {
+                legend: { position: 'bottom', labels: { padding: 12, boxWidth: 12, font: { size: 11 } } },
+                tooltip: {
+                    callbacks: {
+                        label: ctx => ' ' + ctx.label + ': ' + ctx.parsed + ' livro' + (ctx.parsed !== 1 ? 's' : '')
+                    }
+                }
+            }
+        }
+    });
+
+    // ===== ASSUNTOS (Polar Area) =====
+    const assuntos = {{ topAssuntos|map(r => r.descricao)|json_encode|raw }};
+    const assuntosTotal = {{ topAssuntos|map(r => r.total)|json_encode|raw }};
+
+    new Chart(document.getElementById('chartAssuntos'), {
+        type: 'polarArea',
+        data: {
+            labels: assuntos,
+            datasets: [{
+                data: assuntosTotal,
+                backgroundColor: palette.map(c => c + 'bb'),
+                borderWidth: 0,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { padding: 10, boxWidth: 12, font: { size: 11 } } }
+            },
+            scales: {
+                r: { ticks: { display: false }, grid: { color: gridColor } }
+            }
+        }
+    });
+
+    // ===== PREÇOS (Bar vertical) =====
+    const precoTitulos = {{ livrosMaisCaros|map(r => r.titulo)|json_encode|raw }};
+    const precoValores = {{ livrosMaisCaros|map(r => r.preco)|json_encode|raw }};
+
+    new Chart(document.getElementById('chartPrecos'), {
+        type: 'bar',
+        data: {
+            labels: precoTitulos.map(t => t.length > 20 ? t.substring(0, 20) + '…' : t),
+            datasets: [{
+                label: 'Preço (R$)',
+                data: precoValores,
+                backgroundColor: '#6366f122',
+                borderColor: '#6366f1',
+                borderWidth: 2,
+                borderRadius: 6,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: ctx => ' R$ ' + parseFloat(ctx.parsed.y).toLocaleString('pt-BR', { minimumFractionDigits: 2 })
+                    }
+                }
+            },
+            scales: {
+                y: { beginAtZero: true, grid: { color: gridColor }, ticks: { callback: v => 'R$ ' + v } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+
+    // ===== GERAL (Radar) =====
+    new Chart(document.getElementById('chartGeral'), {
+        type: 'bar',
+        data: {
+            labels: ['Livros', 'Autores', 'Editoras', 'Assuntos', 'Usuários'],
+            datasets: [{
+                label: 'Total cadastrado',
+                data: [{{ totalLivros }}, {{ totalAutores }}, {{ totalEditoras }}, {{ totalAssuntos }}, {{ totalUsuarios }}],
+                backgroundColor: [
+                    '#6366f122','#f59e0b22','#22c55e22','#ef444422','#06b6d422'
+                ],
+                borderColor: ['#6366f1','#f59e0b','#22c55e','#ef4444','#06b6d4'],
+                borderWidth: 2,
+                borderRadius: 8,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: { callbacks: { label: ctx => ' ' + ctx.parsed.y + ' registros' } }
+            },
+            scales: {
+                y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: gridColor } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+
+});
+</script>
 {% endblock %}
