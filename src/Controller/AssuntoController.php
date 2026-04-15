@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\Assunto;
 use App\Form\AssuntoType;
 use App\Repository\AssuntoRepository;
-use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -24,10 +23,11 @@ class AssuntoController extends AbstractController
     ) {}
 
     #[Route('/', name: 'app_assunto_index', methods: ['GET'])]
-    public function index(AssuntoRepository $repository): Response
+    public function index(Request $request, AssuntoRepository $repository): Response
     {
+        $page = max(1, (int) $request->query->get('page', 1));
         return $this->render('assunto/index.html.twig', [
-            'assuntos' => $repository->findAll(),
+            'paginacao' => $repository->findPaginated($page),
         ]);
     }
 
@@ -57,10 +57,11 @@ class AssuntoController extends AbstractController
     }
 
     #[Route('/{id}/editar', name: 'app_assunto_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, ?Assunto $assunto): Response
+    public function edit(Request $request, ?Assunto $assunto, AssuntoRepository $repository): Response
     {
         if (!$assunto) {
-            return new JsonResponse(['success' => false, 'message' => 'Assunto não encontrado.'], 404);
+            $this->addFlash('danger', 'Assunto não encontrado.');
+            return $this->redirectToRoute('app_assunto_index');
         }
 
         $form = $this->createForm(AssuntoType::class, $assunto);
@@ -70,22 +71,25 @@ class AssuntoController extends AbstractController
             try {
                 $assunto->setUpdatedAt(new \DateTimeImmutable());
                 $this->em->flush();
-                return new JsonResponse(['success' => true, 'message' => 'Assunto atualizado com sucesso!']);
+                $this->addFlash('success', 'Assunto atualizado com sucesso!');
+                return $this->redirectToRoute('app_assunto_edit', ['id' => $assunto->getId()]);
             } catch (UniqueConstraintViolationException) {
-                return new JsonResponse(['success' => false, 'message' => 'Já existe um assunto com esta descrição.'], 422);
+                $this->addFlash('danger', 'Já existe um assunto com esta descrição.');
             } catch (\Throwable $e) {
                 $this->logger->error('Erro ao atualizar assunto #' . $assunto->getId() . ': ' . $e->getMessage());
-                return new JsonResponse(['success' => false, 'message' => 'Erro interno ao atualizar o assunto. Tente novamente.'], 500);
+                $this->addFlash('danger', 'Erro interno ao atualizar o assunto.');
             }
         }
 
-        return $this->render('assunto/_form.html.twig', [
-            'form' => $form->createView(),
+        return $this->render('assunto/edit.html.twig', [
+            'form'    => $form->createView(),
+            'assunto' => $assunto,
+            'livros'  => $repository->findLivrosByAssunto($assunto->getId()),
         ]);
     }
 
     #[Route('/{id}/excluir', name: 'app_assunto_delete', methods: ['POST'])]
-    public function delete(Request $request, ?Assunto $assunto): Response
+    public function delete(Request $request, ?Assunto $assunto, AssuntoRepository $repository): Response
     {
         if (!$assunto) {
             $this->addFlash('danger', 'Assunto não encontrado.');
@@ -97,12 +101,18 @@ class AssuntoController extends AbstractController
             return $this->redirectToRoute('app_assunto_index');
         }
 
+        $livros = $repository->findLivrosByAssunto($assunto->getId());
+        if (!empty($livros)) {
+            $titulos = implode(', ', array_map(fn($l) => '“' . $l['titulo'] . '”', array_slice($livros, 0, 5)));
+            $extra = count($livros) > 5 ? ' e mais ' . (count($livros) - 5) . ' livro(s)' : '';
+            $this->addFlash('danger', 'Não é possível excluir “' . $assunto->getDescricao() . '” pois está vinculado a: ' . $titulos . $extra . '.');
+            return $this->redirectToRoute('app_assunto_index');
+        }
+
         try {
             $this->em->remove($assunto);
             $this->em->flush();
             $this->addFlash('success', 'Assunto excluído com sucesso!');
-        } catch (ForeignKeyConstraintViolationException) {
-            $this->addFlash('danger', 'Não é possível excluir este assunto pois está vinculado a um ou mais livros.');
         } catch (\Throwable $e) {
             $this->logger->error('Erro ao excluir assunto #' . $assunto->getId() . ': ' . $e->getMessage());
             $this->addFlash('danger', 'Erro interno ao excluir o assunto. Tente novamente.');

@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\Editora;
 use App\Form\EditoraType;
 use App\Repository\EditoraRepository;
-use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -24,10 +23,11 @@ class EditoraController extends AbstractController
     ) {}
 
     #[Route('/', name: 'app_editora_index', methods: ['GET'])]
-    public function index(EditoraRepository $repository): Response
+    public function index(Request $request, EditoraRepository $repository): Response
     {
+        $page = max(1, (int) $request->query->get('page', 1));
         return $this->render('editora/index.html.twig', [
-            'editoras' => $repository->findAll(),
+            'paginacao' => $repository->findPaginated($page),
         ]);
     }
 
@@ -57,10 +57,11 @@ class EditoraController extends AbstractController
     }
 
     #[Route('/{id}/editar', name: 'app_editora_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, ?Editora $editora): Response
+    public function edit(Request $request, ?Editora $editora, EditoraRepository $repository): Response
     {
         if (!$editora) {
-            return new JsonResponse(['success' => false, 'message' => 'Editora não encontrada.'], 404);
+            $this->addFlash('danger', 'Editora não encontrada.');
+            return $this->redirectToRoute('app_editora_index');
         }
 
         $form = $this->createForm(EditoraType::class, $editora);
@@ -70,22 +71,25 @@ class EditoraController extends AbstractController
             try {
                 $editora->setUpdatedAt(new \DateTimeImmutable());
                 $this->em->flush();
-                return new JsonResponse(['success' => true, 'message' => 'Editora atualizada com sucesso!']);
+                $this->addFlash('success', 'Editora atualizada com sucesso!');
+                return $this->redirectToRoute('app_editora_edit', ['id' => $editora->getId()]);
             } catch (UniqueConstraintViolationException) {
-                return new JsonResponse(['success' => false, 'message' => 'Já existe uma editora com este nome.'], 422);
+                $this->addFlash('danger', 'Já existe uma editora com este nome.');
             } catch (\Throwable $e) {
                 $this->logger->error('Erro ao atualizar editora #' . $editora->getId() . ': ' . $e->getMessage());
-                return new JsonResponse(['success' => false, 'message' => 'Erro interno ao atualizar a editora. Tente novamente.'], 500);
+                $this->addFlash('danger', 'Erro interno ao atualizar a editora.');
             }
         }
 
-        return $this->render('editora/_form.html.twig', [
-            'form' => $form->createView(),
+        return $this->render('editora/edit.html.twig', [
+            'form'    => $form->createView(),
+            'editora' => $editora,
+            'livros'  => $repository->findLivrosByEditora($editora->getId()),
         ]);
     }
 
     #[Route('/{id}/excluir', name: 'app_editora_delete', methods: ['POST'])]
-    public function delete(Request $request, ?Editora $editora): Response
+    public function delete(Request $request, ?Editora $editora, EditoraRepository $repository): Response
     {
         if (!$editora) {
             $this->addFlash('danger', 'Editora não encontrada.');
@@ -97,12 +101,18 @@ class EditoraController extends AbstractController
             return $this->redirectToRoute('app_editora_index');
         }
 
+        $livros = $repository->findLivrosByEditora($editora->getId());
+        if (!empty($livros)) {
+            $titulos = implode(', ', array_map(fn($l) => '“' . $l['titulo'] . '”', array_slice($livros, 0, 5)));
+            $extra = count($livros) > 5 ? ' e mais ' . (count($livros) - 5) . ' livro(s)' : '';
+            $this->addFlash('danger', 'Não é possível excluir “' . $editora->getNome() . '” pois está vinculada a: ' . $titulos . $extra . '.');
+            return $this->redirectToRoute('app_editora_index');
+        }
+
         try {
             $this->em->remove($editora);
             $this->em->flush();
             $this->addFlash('success', 'Editora excluída com sucesso!');
-        } catch (ForeignKeyConstraintViolationException) {
-            $this->addFlash('danger', 'Não é possível excluir esta editora pois está vinculada a um ou mais livros.');
         } catch (\Throwable $e) {
             $this->logger->error('Erro ao excluir editora #' . $editora->getId() . ': ' . $e->getMessage());
             $this->addFlash('danger', 'Erro interno ao excluir a editora. Tente novamente.');

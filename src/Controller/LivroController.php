@@ -23,10 +23,19 @@ class LivroController extends AbstractController
     ) {}
 
     #[Route('/', name: 'app_livro_index', methods: ['GET'])]
-    public function index(LivroRepository $repository): Response
+    public function index(Request $request, LivroRepository $repository): Response
     {
+        $page = max(1, (int) $request->query->get('page', 1));
+        $paginacao = $repository->findPaginated($page);
+
+        $editoras = array_values(array_unique(array_filter(array_column(
+            $repository->findAllWithRelations(), 'editora'
+        ))));
+        sort($editoras);
+
         return $this->render('livro/index.html.twig', [
-            'livros' => $repository->findAll(),
+            'paginacao' => $paginacao,
+            'editoras'  => $editoras,
         ]);
     }
 
