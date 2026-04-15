@@ -4,6 +4,9 @@
 
 {% block stylesheets %}
 <link href="/css/landing.css" rel="stylesheet">
+{% if livraria.hasCoordinates() %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+{% endif %}
 {% endblock %}
 
 {% block body %}
@@ -203,6 +206,22 @@
     </div>
 </section>
 
+{# MAPA #}
+{% if livraria.hasCoordinates() %}
+<section style="background:#0f172a;padding:5rem 0;">
+    <div class="container">
+        <div class="text-center mb-4">
+            <div class="section-label">Onde estamos</div>
+            <h2 class="section-title">Nossa Localização</h2>
+            {% if livraria.enderecoCompleto %}
+            <p class="section-subtitle">{{ livraria.enderecoCompleto }}</p>
+            {% endif %}
+        </div>
+        <div id="landing-map" style="height:380px;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);"></div>
+    </div>
+</section>
+{% endif %}
+
 {# CTA #}
 <section class="cta-section">
     <div class="container">
@@ -230,6 +249,26 @@
 {% endblock %}
 
 {% block javascripts %}
+{% if livraria.hasCoordinates() %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var map = L.map('landing-map', { zoomControl: true, scrollWheelZoom: false })
+        .setView([{{ livraria.latitude }}, {{ livraria.longitude }}], 16);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+    var icon = L.divIcon({
+        html: '<div style="background:#6366f1;width:32px;height:32px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.3);"></div>',
+        iconSize: [32, 32], iconAnchor: [16, 32], className: ''
+    });
+    L.marker([{{ livraria.latitude }}, {{ livraria.longitude }}], { icon: icon })
+        .addTo(map)
+        .bindPopup('<strong>{{ livraria.nome }}</strong>{% if livraria.enderecoCompleto %}<br><small>{{ livraria.enderecoCompleto }}</small>{% endif %}')
+        .openPopup();
+});
+</script>
+{% endif %}
 <script>
 window.addEventListener('scroll', function () {
     var nav = document.getElementById('landing-nav');
